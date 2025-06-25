@@ -2,14 +2,6 @@ import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { createLogger, defineConfig } from 'vite';
 
-const isDev = process.env.NODE_ENV !== 'production';
-let inlineEditPlugin, editModeDevPlugin;
-
-if (isDev) {
-	inlineEditPlugin = (await import('./plugins/visual-editor/vite-plugin-react-inline-editor.js')).default;
-	editModeDevPlugin = (await import('./plugins/visual-editor/vite-plugin-edit-mode.js')).default;
-}
-
 const configHorizonsViteErrorHandler = `
 const observer = new MutationObserver((mutations) => {
 	for (const mutation of mutations) {
@@ -33,12 +25,9 @@ observer.observe(document.documentElement, {
 });
 
 function handleViteOverlay(node) {
-	if (!node.shadowRoot) {
-		return;
-	}
+	if (!node.shadowRoot) return;
 
 	const backdrop = node.shadowRoot.querySelector('.backdrop');
-
 	if (backdrop) {
 		const overlayHtml = backdrop.outerHTML;
 		const parser = new DOMParser();
@@ -82,7 +71,6 @@ console.error = function(...args) {
 	originalConsoleError.apply(console, args);
 
 	let errorString = '';
-
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
 		if (arg instanceof Error) {
@@ -108,7 +96,6 @@ const originalFetch = window.fetch;
 window.fetch = function(...args) {
 	const url = args[0] instanceof Request ? args[0].url : args[0];
 
-	// Skip WebSocket URLs
 	if (url.startsWith('ws:') || url.startsWith('wss:')) {
 		return originalFetch.apply(this, args);
 	}
@@ -116,26 +103,21 @@ window.fetch = function(...args) {
 	return originalFetch.apply(this, args)
 		.then(async response => {
 			const contentType = response.headers.get('Content-Type') || '';
-
-			// Exclude HTML document responses
-			const isDocumentResponse =
-				contentType.includes('text/html') ||
-				contentType.includes('application/xhtml+xml');
+			const isDocumentResponse = contentType.includes('text/html') || contentType.includes('application/xhtml+xml');
 
 			if (!response.ok && !isDocumentResponse) {
-					const responseClone = response.clone();
-					const errorFromRes = await responseClone.text();
-					const requestUrl = response.url;
-					console.error(\`Fetch error from \${requestUrl}: \${errorFromRes}\`);
+				const responseClone = response.clone();
+				const errorFromRes = await responseClone.text();
+				const requestUrl = response.url;
+				console.error(\`Fetch error from \${requestUrl}: \${errorFromRes}\`);
 			}
 
 			return response;
 		})
 		.catch(error => {
-			if (!url.match(/\.html?$/i)) {
+			if (!url.match(/\\.html?$/i)) {
 				console.error(error);
 			}
-
 			throw error;
 		});
 };
@@ -161,7 +143,7 @@ const addTransformIndexHtml = {
 				},
 				{
 					tag: 'script',
-					attrs: {type: 'module'},
+					attrs: { type: 'module' },
 					children: configHorizonsConsoleErrroHandler,
 					injectTo: 'head',
 				},
@@ -178,36 +160,31 @@ const addTransformIndexHtml = {
 
 console.warn = () => {};
 
-const logger = createLogger()
-const loggerError = logger.error
-
+const logger = createLogger();
+const originalError = logger.error;
 logger.error = (msg, options) => {
-	if (options?.error?.toString().includes('CssSyntaxError: [postcss]')) {
-		return;
-	}
-
-	loggerError(msg, options);
-}
+	if (options?.error?.toString().includes('CssSyntaxError: [postcss]')) return;
+	originalError(msg, options);
+};
 
 export default defineConfig(async () => {
 	const isDev = process.env.NODE_ENV !== 'production';
 
-	let inlineEditPlugin, editModeDevPlugin;
+	let inlineEditPlugin = () => {};
+	let editModeDevPlugin = () => {};
 
 	if (isDev) {
 		inlineEditPlugin = (await import('./plugins/visual-editor/vite-plugin-react-inline-editor.js')).default;
 		editModeDevPlugin = (await import('./plugins/visual-editor/vite-plugin-edit-mode.js')).default;
 	}
 
-	const plugins = [
-		...(isDev ? [inlineEditPlugin(), editModeDevPlugin()] : []),
-		react(),
-		addTransformIndexHtml
-	];
-
 	return {
 		customLogger: logger,
-		plugins,
+		plugins: [
+			...(isDev ? [inlineEditPlugin(), editModeDevPlugin()] : []),
+			react(),
+			addTransformIndexHtml,
+		],
 		server: {
 			cors: true,
 			headers: {
