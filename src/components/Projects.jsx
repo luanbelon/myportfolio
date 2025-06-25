@@ -4,7 +4,7 @@ import { ExternalLink, Github, Filter } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext'; 
 import sunbeat from "../assets/imgs/sunbeatenergy.png"
-import overall from "../assets/imgs/overallcontractors.png"
+import overall from "../assets/imgs/overallcontractors.png" 
 
 
 const Projects = () => {
