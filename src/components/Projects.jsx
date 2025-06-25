@@ -5,6 +5,8 @@ import { toast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext'; 
 import sunbeat from "../assets/imgs/sunbeatenergy.png"
 import overall from "../assets/imgs/overallcontractors.png" 
+import caricoos from "../assets/imgs/caricoos.png" 
+
 
 
 const Projects = () => {
@@ -34,11 +36,11 @@ const Projects = () => {
     },
     {
       id: 3,
-      title: t('corporateSite'),
-      description: t('corporateDesc'),
-      image: 'Corporate website with professional design and responsive layout',
-      technologies: ['WordPress', 'Elementor', 'CSS'],
-      category: 'wordpress',
+      title: t('caricoos'),
+      description: t('caricoosDesc'),
+      image: caricoos,
+      technologies: ['HTML', 'CSS'],
+      category: 'frontend',
       github: '#',
       live: '#'
     },

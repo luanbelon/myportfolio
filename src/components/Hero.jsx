@@ -107,7 +107,7 @@ const Hero = () => {
               >
                 {t('heroTitle')}{' '}
                 <span className="animated-gradient-text animate-gradient block md:inline">
-                  Luan Santos
+                  Luan Belon
                 </span>
               </motion.h1>
             </motion.div>
@@ -175,7 +175,7 @@ const Hero = () => {
                   initial={{ scale: 1.2, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 1, delay: 0.5 }}
-                  alt="Luan Santos - Desenvolvedor Front-end e UX Designer"
+                  alt="Luan Belon - Desenvolvedor Front-end e UX Designer"
                   className="w-full h-full object-cover"
                   src={luan2} 
                 />

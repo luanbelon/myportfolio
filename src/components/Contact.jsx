@@ -70,25 +70,22 @@ const Contact = () => {
       icon: <Linkedin size={24} />,
       label: 'LinkedIn',
       color: 'hover:text-blue-400',
-      platform: 'linkedin'
+      platform: 'linkedin',
+      url: 'https://www.linkedin.com/in/luansantos-dev/'
     },
     {
       icon: <Github size={24} />,
       label: 'GitHub',
       color: 'hover:text-gray-400',
-      platform: 'github'
-    },
-    {
-      icon: <Instagram size={24} />,
-      label: 'Instagram',
-      color: 'hover:text-pink-400',
-      platform: 'instagram'
+      platform: 'github',
+      url: 'https://github.com/luanbelon'
     },
     {
       icon: <Mail size={24} />,
       label: 'Email',
       color: 'hover:text-red-400',
-      platform: 'email'
+      platform: 'email',
+      url: 'mailto:luan@luanbelondev.com'
     }
   ];
 
@@ -196,8 +193,8 @@ const Contact = () => {
             >
               {[
                 { icon: Mail, text: 'luan@luanbelondev.com' },
-                { icon: Phone, text: '+55 (11) 99999-9999' },
-                { icon: MapPin, text: 'São Paulo, Brasil' }
+                { icon: Phone, text: '+55 (71) 98640-6627' },
+                { icon: MapPin, text: 'Salvador - Bahia, Brasil' }
               ].map((contact, index) => (
                 <motion.div
                   key={index}
@@ -235,7 +232,7 @@ const Contact = () => {
               </motion.h4>
               <div className="flex gap-4">
                 {socialLinks.map((social, index) => (
-                  <motion.button
+                  <motion.a
                     key={index}
                     variants={socialVariants}
                     initial="hidden"
@@ -244,7 +241,9 @@ const Contact = () => {
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.1, y: -5, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => handleSocialClick(social.platform)}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`p-3 bg-yellow-400/10 rounded-full text-yellow-400 transition-colors ${social.color} relative overflow-hidden`}
                     title={social.label}
                   >
@@ -255,7 +254,7 @@ const Contact = () => {
                       transition={{ duration: 0.3 }}
                     />
                     <span className="relative z-10">{social.icon}</span>
-                  </motion.button>
+                  </motion.a>
                 ))}
               </div>
             </motion.div>

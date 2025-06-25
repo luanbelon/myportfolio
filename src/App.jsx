@@ -18,8 +18,8 @@ function App() {
     <LanguageProvider>
       <AccessibilityProvider>
         <Helmet>
-          <title>Luan Santos - Desenvolvedor Front-end & UX Designer</title>
-          <meta name="description" content="Portfolio de Luan Santos - Analista de Sistemas, Desenvolvedor Front-end e UX Designer especializado em React, Angular, WordPress e design de experiência do usuário." />
+          <title>Luan Belon - Desenvolvedor Front-end & UX Designer</title>
+          <meta name="description" content="Portfolio de Luan Belon - Analista de Sistemas, Desenvolvedor Front-end e UX Designer especializado em React, Angular, WordPress e design de experiência do usuário." />
           <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
         </Helmet>
         
