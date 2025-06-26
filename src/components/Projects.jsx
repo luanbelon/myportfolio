@@ -6,6 +6,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import sunbeat from "../assets/imgs/sunbeatenergy.png"
 import overall from "../assets/imgs/overallcontractors.png" 
 import caricoos from "../assets/imgs/caricoos.png" 
+import ecofit from "../assets/imgs/Ecofit.png" 
+import coletafacil from "../assets/imgs/coletafacil.png"
+
 
 
 
@@ -46,39 +49,29 @@ const Projects = () => {
     },
     {
       id: 4,
-      title: t('deliveryApp'),
-      description: t('deliveryDesc'),
-      image: 'Food delivery app interface with menu and ordering system',
-      technologies: ['NextJS', 'React', 'JavaScript'],
+      title: t('ecofit'),
+      description: t('ecofitDesc'),
+      image: ecofit,
+      technologies: ['Figma', 'UX/UI'],
       category: 'ux',
       github: '#',
-      live: '#'
+      live: 'https://www.figma.com/proto/rXS7eW5f4cgJJ1cNbTMMcX?node-id=0-1&t=4xgHtBBvxSOnHK5D-6'
     },
     {
       id: 5,
-      title: t('creativePortfolio'),
-      description: t('portfolioDesc'),
-      image: 'Creative portfolio website with interactive gallery',
-      technologies: ['HTML', 'CSS', 'JavaScript'],
-      category: 'frontend',
+      title: t('coletafacil'),
+      description: t('coletafacilDesc'),
+      image: coletafacil,
+      technologies: ['Figma', 'UX/UI'],
+      category: 'ux',
       github: '#',
-      live: '#'
+      live: 'https://www.figma.com/proto/idNnluwy8mXe2hoSEAOpNQ/Coleta-F%C3%A1cil---App?node-id=134-343&starting-point-node-id=189%3A1518'
     },
-    {
-      id: 6,
-      title: t('managementSystem'),
-      description: t('managementDesc'),
-      image: 'Business management system with multiple modules and dashboard',
-      technologies: ['Angular', 'TypeScript', 'Sass'],
-      category: 'angular',
-      github: '#',
-      live: '#'
-    }
   ];
 
   const filters = [
     { id: 'todos', label: t('all') },
-    { id: 'ux', label: 'UX' },
+    { id: 'ux', label: 'UX/UI' },
     { id: 'design', label: 'Desing' },
     { id: 'wordpress', label: 'WordPress' },
     { id: 'frontend', label: 'Frontend' }

@@ -63,7 +63,7 @@ const Header = () => {
       variants={headerVariants}
       initial="hidden"
       animate="visible"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-[60px] flex items-center ${
         isScrolled 
           ? 'bg-black/90 backdrop-blur-md border-b border-yellow-500/20' 
           : 'bg-transparent'
@@ -89,7 +89,7 @@ const Header = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-white ml-2"
             >
-              SANTOS
+              BELON
             </motion.span>
           </motion.div>
 
