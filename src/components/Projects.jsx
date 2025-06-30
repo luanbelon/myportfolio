@@ -7,7 +7,7 @@ import sunbeat from "../assets/imgs/sunbeatenergy.png"
 import overall from "../assets/imgs/overallcontractors.png" 
 import caricoos from "../assets/imgs/caricoos.png" 
 import ecofit from "../assets/imgs/Ecofit.png" 
-import coletafacil from "../assets/imgs/coletafacil.png"
+import coletaFacilImg from '../assets/imgs/coletafacil.png';
 import bffdeli from "../assets/imgs/bffdeli.png"
 
 
@@ -64,7 +64,7 @@ const Projects = () => {
       id: 5,
       title: t('coletafacil'),
       description: t('coletafacilDesc'),
-      image: coletafacil,
+      image: coletaFacilImg,
       technologies: ['Figma', 'UX/UI'],
       category: 'ux',
       github: '#',
