@@ -8,6 +8,9 @@ import overall from "../assets/imgs/overallcontractors.png"
 import caricoos from "../assets/imgs/caricoos.png" 
 import ecofit from "../assets/imgs/Ecofit.png" 
 import coletafacil from "../assets/imgs/coletafacil.png"
+import bffdeli from "../assets/imgs/bffdeli.png"
+
+
 
 
 
@@ -66,6 +69,16 @@ const Projects = () => {
       category: 'ux',
       github: '#',
       live: 'https://www.figma.com/proto/idNnluwy8mXe2hoSEAOpNQ/Coleta-F%C3%A1cil---App?node-id=134-343&starting-point-node-id=189%3A1518'
+    },
+    {
+      id: 6,
+      title: t('bffdeli'),
+      description: t('bffdeliDesc'),
+      image: bffdeli,
+      technologies: ['wordpress'],
+      category: 'wordpress',
+      github: '#',
+      live: 'https://bffdeli.com/wp/'
     },
   ];
 
