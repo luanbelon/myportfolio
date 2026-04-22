@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Github, Filter } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext'; 
-import sunbeat from "../assets/imgs/sunbeatenergy.png"
-import overall from "../assets/imgs/overallcontractors.png" 
-import caricoos from "../assets/imgs/caricoos.png" 
-import ecofit from "../assets/imgs/Ecofit.png" 
-import coletaFacilImg from '../assets/imgs/coletafacil.png';
-import bffdeli from "../assets/imgs/bffdeli.png"
+import { fetchProjects } from '@/lib/api';
+import { resolveProjectImage } from '@/lib/projectImages';
 
 
 
@@ -17,90 +12,46 @@ import bffdeli from "../assets/imgs/bffdeli.png"
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('todos');
-  const { t } = useLanguage();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { t, language } = useLanguage();
 
-  const projects = [
-    {
-      id: 1,
-      title: t('Sunbeat'),
-      description: t('SunbeatDesc'),   
-      image: sunbeat,
-      technologies: ['Wordpress', 'JavaScript', 'CSS', 'Elementor'],
-      category: 'wordpress',
-      github: '#',
-      live: 'https://sunbeatenergy.com/en/'
-    },
-    {
-      id: 2,
-      title: t('Overall'),
-      description: t('overallDesc'),
-      image: overall,
-      technologies: ['Wordpress', 'Elementor'],
-      category: 'wordpress',
-      github: '#',
-      live: 'https://overallcontractors.com/'
-    },
-    {
-      id: 3,
-      title: t('caricoos'),
-      description: t('caricoosDesc'),
-      image: caricoos,
-      technologies: ['HTML', 'CSS'],
-      category: 'frontend',
-      github: '#',
-      live: '#'
-    },
-    {
-      id: 4,
-      title: t('ecofit'),
-      description: t('ecofitDesc'),
-      image: ecofit,
-      technologies: ['Figma', 'UX/UI'],
-      category: 'ux',
-      github: '#',
-      live: 'https://www.figma.com/proto/rXS7eW5f4cgJJ1cNbTMMcX?node-id=0-1&t=4xgHtBBvxSOnHK5D-6'
-    },
-    {
-      id: 5,
-      title: t('coletafacil'),
-      description: t('coletafacilDesc'),
-      image: coletaFacilImg,
-      technologies: ['Figma', 'UX/UI'],
-      category: 'ux',
-      github: '#',
-      live: 'https://www.figma.com/proto/idNnluwy8mXe2hoSEAOpNQ/Coleta-F%C3%A1cil---App?node-id=134-343&starting-point-node-id=189%3A1518'
-    },
-    {
-      id: 6,
-      title: t('bffdeli'),
-      description: t('bffdeliDesc'),
-      image: bffdeli,
-      technologies: ['wordpress'],
-      category: 'wordpress',
-      github: '#',
-      live: 'https://bffdeli.com/wp/'
-    },
-  ];
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    fetchProjects(language)
+      .then((data) => {
+        if (mounted) {
+          setProjects(data);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setProjects([]);
+        }
+      })
+      .finally(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      });
 
-  const filters = [
+    return () => {
+      mounted = false;
+    };
+  }, [language]);
+
+  const filters = useMemo(() => [
     { id: 'todos', label: t('all') },
     { id: 'ux', label: 'UX/UI' },
-    { id: 'design', label: 'Desing' },
+    { id: 'design', label: 'Design' },
     { id: 'wordpress', label: 'WordPress' },
     { id: 'frontend', label: 'Frontend' }
-  ];
+  ], [t]);
 
   const filteredProjects = activeFilter === 'todos' 
     ? projects 
     : projects.filter(project => project.category === activeFilter);
-
-  const handleProjectClick = (type, url) => {
-    toast({
-      title: t('featureInDevelopment'),
-      description: t('featureDescription'),
-      duration: 3000,
-    });
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -208,7 +159,7 @@ const Projects = () => {
             exit="hidden"
             className="grid grid-3 gap-8"
           >
-            {filteredProjects.map((project, index) => (
+            {(loading ? [] : filteredProjects).map((project, index) => (
               <motion.div
                 key={project.id}
                 variants={itemVariants}
@@ -229,7 +180,7 @@ const Projects = () => {
                       viewport={{ once: true }}
                       alt={project.title}
                       className="w-full h-full object-cover"
-                      src={project.image}
+                      src={resolveProjectImage(project)}
                     />
                   </motion.div>
                   
@@ -240,17 +191,19 @@ const Projects = () => {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 bg-black/60 flex items-center justify-center gap-4"
                   >
-                    {project.github && project.github !== '#' && (
-                      <motion.button
+                    {project.github && (
+                      <motion.a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => handleProjectClick('github', project.github)}
                         className="p-3 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-colors shadow-lg"
                       >
                         <Github size={20} />
-                      </motion.button>
+                      </motion.a>
                     )}
-                    {project.live && project.live !== '#' && (
+                    {project.live && (
                       <motion.a
                         href={project.live}
                         target="_blank"
@@ -295,7 +248,7 @@ const Projects = () => {
                     viewport={{ once: true }}
                     className="flex flex-wrap gap-2"
                   >
-                    {project.technologies.map((tech, techIndex) => (
+                    {(project.technologies || []).map((tech, techIndex) => (
                       <motion.span
                         key={techIndex}
                         initial={{ opacity: 0, scale: 0 }}
@@ -318,6 +271,9 @@ const Projects = () => {
             ))}
           </motion.div>
         </AnimatePresence>
+        {!loading && filteredProjects.length === 0 && (
+          <p className="text-center text-gray-400">Nenhum projeto encontrado para este filtro.</p>
+        )}
 
         {/* Call to Action */}
         <motion.div

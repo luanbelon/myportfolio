@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
+    "dev:api": "node server/index.js",
+    "db:init": "node server/init-db.js",
+    "db:seed": "node server/seed.js",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -25,13 +28,19 @@
     "@radix-ui/react-toast": "^1.2.14",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "framer-motion": "^12.19.1",
     "lucide-react": "^0.523.0",
+    "pg": "^8.20.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
+    "react-router-dom": "^7.14.2",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "translate-google": "^1.5.0"
   },
   "devDependencies": {
     "@babel/generator": "^7.27.5",

@@ -74,6 +74,14 @@ const Footer = () => {
           >
             © 2024 Luan Santos. {t('allRights')}
           </motion.p>
+
+          <motion.a
+            variants={itemVariants}
+            href="mailto:luanbelon@gmail.com"
+            className="text-sm text-yellow-400 hover:text-yellow-300 transition-colors"
+          >
+            luanbelon@gmail.com
+          </motion.a>
           
           <motion.div
             variants={itemVariants}

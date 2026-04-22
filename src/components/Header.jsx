@@ -4,11 +4,15 @@ import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHome = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +24,10 @@ const Header = () => {
   }, []);
 
   const scrollToSection = (sectionId) => {
+    if (!isHome) {
+      navigate('/');
+      return;
+    }
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -115,6 +123,12 @@ const Header = () => {
                 />
               </motion.button>
             ))}
+            <Link className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium" to="/curriculo">
+              Curriculo
+            </Link>
+            <Link className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium" to="/admin">
+              Admin
+            </Link>
             <LanguageToggle />
           </div>
 
@@ -159,6 +173,20 @@ const Header = () => {
                 {item.label}
               </motion.button>
             ))}
+            <Link
+              to="/curriculo"
+              className="block w-full text-left py-2 text-white hover:text-yellow-400 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Curriculo
+            </Link>
+            <Link
+              to="/admin"
+              className="block w-full text-left py-2 text-white hover:text-yellow-400 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Admin
+            </Link>
           </motion.div>
         )}
       </nav>

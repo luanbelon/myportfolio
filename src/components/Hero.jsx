@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import luan from '../../src/assets/imgs/luan.jpg'
 import luan2 from '../../src/assets/imgs/luan2.jpeg'
 
 
@@ -58,7 +57,7 @@ const Hero = () => {
   };
 
   return (
-    <section id="inicio" className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section id="inicio" className="min-h-[65vh] flex items-center justify-center relative overflow-hidden pt-20">
       {/* Partículas de fundo */}
       <div className="particles">
         <div className="particle"></div>

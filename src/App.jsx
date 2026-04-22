@@ -1,17 +1,12 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AccessibilityProvider } from '@/contexts/AccessibilityContext';
-import Header from '@/components/Header';
-import Hero from '@/components/Hero';
-import Skills from '@/components/Skills';
-import Projects from '@/components/Projects';
-import Testimonials from '@/components/Testimonials';
-import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
-import AccessibilityControls from '@/components/AccessibilityControls';
-import { Toaster } from '@/components/ui/toaster';
+import HomePage from '@/pages/HomePage';
+import ResumePage from '@/pages/ResumePage';
+import AdminPage from '@/pages/AdminPage';
 
 function App() {
   return (
@@ -23,17 +18,14 @@ function App() {
           <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
         </Helmet>
         
-        <div className="portfolio">
-          <AccessibilityControls />
-          <Header />
-          <Hero />
-          <Skills />
-          <Projects />
-          <Testimonials />
-          <Contact />
-          <Footer />
-          <Toaster />
-        </div>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/curriculo" element={<ResumePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
       </AccessibilityProvider>
     </LanguageProvider>
   );

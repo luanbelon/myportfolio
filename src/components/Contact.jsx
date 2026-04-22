@@ -30,7 +30,7 @@ const Contact = () => {
     };
 
     try {
-      // Simular envio de email para luanbelondev.com
+      // Simular envio de email para Gmail principal
       const response = await fetch('https://formspree.io/f/xpwagdqr', {
         method: 'POST',
         headers: {
@@ -40,7 +40,7 @@ const Contact = () => {
           ...data,
           _replyto: data.email,
           _subject: `Portfolio Contact: ${data.subject}`,
-          _to: 'luan@luanbelondev.com'
+          _to: 'luanbelon@gmail.com'
         })
       });
 
@@ -85,7 +85,7 @@ const Contact = () => {
       label: 'Email',
       color: 'hover:text-red-400',
       platform: 'email',
-      url: 'mailto:luan@luanbelondev.com'
+      url: 'mailto:luanbelon@gmail.com'
     }
   ];
 
@@ -192,7 +192,7 @@ const Contact = () => {
               className="space-y-4"
             >
               {[
-                { icon: Mail, text: 'luan@luanbelondev.com' },
+                { icon: Mail, text: 'luanbelon@gmail.com' },
                 { icon: Phone, text: '+55 (71) 98640-6627' },
                 { icon: MapPin, text: 'Salvador - Bahia, Brasil' }
               ].map((contact, index) => (

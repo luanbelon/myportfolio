@@ -187,6 +187,12 @@ export default defineConfig(async () => {
 		],
 		server: {
 			cors: true,
+			proxy: {
+				'/api': {
+					target: 'http://localhost:3001',
+					changeOrigin: true,
+				},
+			},
 			headers: {
 				'Cross-Origin-Embedder-Policy': 'credentialless',
 			},
