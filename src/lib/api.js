@@ -15,7 +15,16 @@ export async function fetchTags(token) {
       : {},
   });
   if (!response.ok) {
-    throw new Error('Could not load tags');
+    let message = 'Could not load tags';
+    try {
+      const payload = await response.json();
+      if (payload?.error) {
+        message = payload.error;
+      }
+    } catch (error) {
+      // Keep default message when parsing fails
+    }
+    throw new Error(message);
   }
   return response.json();
 }
@@ -31,7 +40,16 @@ export async function createProject(payload, token) {
   });
 
   if (!response.ok) {
-    throw new Error('Could not create project');
+    let message = 'Could not create project';
+    try {
+      const payload = await response.json();
+      if (payload?.error) {
+        message = payload.error;
+      }
+    } catch (error) {
+      // Keep default message when parsing fails
+    }
+    throw new Error(message);
   }
 
   return response.json();

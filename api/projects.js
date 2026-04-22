@@ -1,6 +1,8 @@
 const db = require('./_lib/db');
 const { translateText } = require('./_lib/translate');
 const { verifyAdminToken, readBearerToken } = require('./_lib/auth');
+const { ensureSchema } = require('./_lib/schema');
+const { ensureDefaultProjectsSeeded } = require('./_lib/seed-defaults');
 
 function normalizeLanguage(language) {
   if (language === 'en' || language === 'es') {
@@ -48,6 +50,8 @@ async function handleGet(req, res) {
   const language = normalizeLanguage(req.query.lang);
 
   try {
+    await ensureSchema();
+    await ensureDefaultProjectsSeeded();
     const result = await db.query(
       `SELECT p.*,
               COALESCE(
@@ -83,7 +87,7 @@ async function handleGet(req, res) {
 
     return res.status(200).json(payload);
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch projects' });
+    return res.status(500).json({ error: `Failed to fetch projects: ${error.message}` });
   }
 }
 
@@ -119,6 +123,8 @@ async function handlePost(req, res) {
 
   const client = await db.pool.connect();
   try {
+    await ensureSchema();
+    await ensureDefaultProjectsSeeded();
     await client.query('BEGIN');
     const insertProject = await client.query(
       `INSERT INTO projects (slug, title_pt, description_pt, category, github_url, live_url, image_key, image_url, created_at, updated_at)
@@ -141,7 +147,7 @@ async function handlePost(req, res) {
     return res.status(201).json({ ok: true, id: projectId });
   } catch (error) {
     await client.query('ROLLBACK');
-    return res.status(500).json({ error: 'Failed to create project' });
+    return res.status(500).json({ error: `Failed to create project: ${error.message}` });
   } finally {
     client.release();
   }

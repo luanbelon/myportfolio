@@ -103,7 +103,7 @@ const AdminPage = () => {
       setFormData(initialForm);
       await loadData();
     } catch (error) {
-      setFeedback('Erro ao salvar projeto. Confira se a API e o banco estao ativos.');
+      setFeedback(`Erro ao salvar projeto: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
