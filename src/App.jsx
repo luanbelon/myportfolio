@@ -22,7 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/curriculo" element={<ResumePage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/adm-luan-portfolio" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

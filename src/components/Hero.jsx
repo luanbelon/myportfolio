@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import luan2 from '../../src/assets/imgs/luan2.jpeg'
 
@@ -102,7 +101,7 @@ const Hero = () => {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                className="text-5xl md:text-7xl font-black leading-tight"
+                className="text-4xl md:text-6xl font-black leading-tight"
               >
                 {t('heroTitle')}{' '}
                 <span className="animated-gradient-text animate-gradient block md:inline">
@@ -197,22 +196,6 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <motion.button
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          onClick={scrollToSkills}
-          className="text-yellow-400 hover:text-yellow-300 transition-colors bounce-animation"
-        >
-          <ChevronDown size={32} />
-        </motion.button>
-      </motion.div>
     </section>
   );
 };

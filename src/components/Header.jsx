@@ -126,9 +126,6 @@ const Header = () => {
             <Link className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium" to="/curriculo">
               Curriculo
             </Link>
-            <Link className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium" to="/admin">
-              Admin
-            </Link>
             <LanguageToggle />
           </div>
 
@@ -179,13 +176,6 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Curriculo
-            </Link>
-            <Link
-              to="/admin"
-              className="block w-full text-left py-2 text-white hover:text-yellow-400 transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Admin
             </Link>
           </motion.div>
         )}

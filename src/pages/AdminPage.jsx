@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createProject, fetchProjects, fetchTags } from '@/lib/api';
+import { Helmet } from 'react-helmet';
+import { adminLogin, createProject, fetchProjects, fetchTags, verifyAdminToken } from '@/lib/api';
 
 const categoryOptions = [
   { value: 'frontend', label: 'Frontend' },
@@ -31,6 +32,10 @@ const initialForm = {
 };
 
 const AdminPage = () => {
+  const [token, setToken] = useState('');
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [authError, setAuthError] = useState('');
   const [formData, setFormData] = useState(initialForm);
   const [tags, setTags] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -43,16 +48,34 @@ const AdminPage = () => {
   }, [formData.tagIds, tags]);
 
   async function loadData() {
-    const [allTags, allProjects] = await Promise.all([fetchTags(), fetchProjects('pt')]);
+    const [allTags, allProjects] = await Promise.all([fetchTags(token), fetchProjects('pt')]);
     setTags(allTags);
     setProjects(allProjects);
   }
 
   useEffect(() => {
+    const savedToken = localStorage.getItem('admin-token');
+    if (!savedToken) {
+      return;
+    }
+
+    verifyAdminToken(savedToken)
+      .then(() => {
+        setToken(savedToken);
+      })
+      .catch(() => {
+        localStorage.removeItem('admin-token');
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
     loadData().catch(() => {
       setFeedback('Nao foi possivel carregar os dados do admin.');
     });
-  }, []);
+  }, [token]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -75,7 +98,7 @@ const AdminPage = () => {
     setFeedback('');
 
     try {
-      await createProject(formData);
+      await createProject(formData, token);
       setFeedback('Projeto criado com sucesso. Traducoes serao geradas automaticamente.');
       setFormData(initialForm);
       await loadData();
@@ -86,12 +109,90 @@ const AdminPage = () => {
     }
   }
 
+  async function handleLogin(event) {
+    event.preventDefault();
+    setIsAuthenticating(true);
+    setAuthError('');
+
+    try {
+      const response = await adminLogin(credentials);
+      setToken(response.token);
+      localStorage.setItem('admin-token', response.token);
+      setCredentials({ username: '', password: '' });
+    } catch (error) {
+      setAuthError('Login invalido. Verifique usuario e senha.');
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }
+
+  function handleLogout() {
+    setToken('');
+    setTags([]);
+    setProjects([]);
+    localStorage.removeItem('admin-token');
+  }
+
+  if (!token) {
+    return (
+      <main className="min-h-screen bg-black text-white px-6 py-16">
+        <Helmet>
+          <title>Area administrativa</title>
+          <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+        </Helmet>
+        <div className="container max-w-md mx-auto">
+          <section className="card">
+            <h1 className="text-3xl font-bold text-yellow-400 mb-2">Login Admin</h1>
+            <p className="text-gray-300 mb-6">Acesso restrito. Informe usuario e senha.</p>
+            <form className="space-y-4" onSubmit={handleLogin}>
+              <input
+                className="w-full px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg"
+                placeholder="Usuario"
+                value={credentials.username}
+                onChange={(event) =>
+                  setCredentials((prev) => ({ ...prev, username: event.target.value }))
+                }
+                required
+              />
+              <input
+                type="password"
+                className="w-full px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg"
+                placeholder="Senha"
+                value={credentials.password}
+                onChange={(event) =>
+                  setCredentials((prev) => ({ ...prev, password: event.target.value }))
+                }
+                required
+              />
+              <button type="submit" className="btn w-full" disabled={isAuthenticating}>
+                {isAuthenticating ? 'Entrando...' : 'Entrar'}
+              </button>
+            </form>
+            {authError && <p className="text-red-300 text-sm mt-4">{authError}</p>}
+            <div className="mt-6">
+              <Link className="text-yellow-400 hover:text-yellow-300 text-sm" to="/">
+                Voltar ao site
+              </Link>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-black text-white px-6 py-16">
+      <Helmet>
+        <title>Area administrativa</title>
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+      </Helmet>
       <div className="container max-w-6xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-yellow-400">Area Administrativa</h1>
           <div className="flex gap-3">
+            <button className="btn btn-outline" onClick={handleLogout}>
+              Sair
+            </button>
             <Link className="btn btn-outline" to="/curriculo">
               Ver Curriculo
             </Link>
