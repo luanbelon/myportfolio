@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { adminLogin, createProject, fetchProjects, fetchTags, verifyAdminToken } from '@/lib/api';
+import { adminLogin, createProject, createTag, fetchProjects, fetchTags, verifyAdminToken } from '@/lib/api';
 
 const categoryOptions = [
   { value: 'frontend', label: 'Frontend' },
@@ -10,23 +10,12 @@ const categoryOptions = [
   { value: 'design', label: 'Design' },
 ];
 
-const imageKeyOptions = [
-  '',
-  'sunbeat',
-  'overall',
-  'caricoos',
-  'ecofit',
-  'coletafacil',
-  'bffdeli',
-];
-
 const initialForm = {
   title: '',
   description: '',
   category: 'frontend',
   live: '',
   github: '',
-  imageKey: '',
   imageUrl: '',
   tagIds: [],
 };
@@ -41,6 +30,8 @@ const AdminPage = () => {
   const [projects, setProjects] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [newTagName, setNewTagName] = useState('');
+  const [isCreatingTag, setIsCreatingTag] = useState(false);
 
   const selectedTagsText = useMemo(() => {
     const selected = tags.filter((tag) => formData.tagIds.includes(String(tag.id)));
@@ -82,6 +73,55 @@ const AdminPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
+  async function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Falha ao ler arquivo de imagem'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleImageUpload(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setFeedback('A imagem deve ter no maximo 2MB.');
+      return;
+    }
+
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      setFormData((prev) => ({ ...prev, imageUrl: dataUrl }));
+      setFeedback('Imagem carregada com sucesso.');
+    } catch (error) {
+      setFeedback(error.message);
+    }
+  }
+
+  async function handleCreateTag() {
+    const trimmed = newTagName.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    setIsCreatingTag(true);
+    setFeedback('');
+    try {
+      const created = await createTag(trimmed, token);
+      setTags((prev) => [...prev.filter((tag) => tag.id !== created.id), created].sort((a, b) => a.name.localeCompare(b.name)));
+      setFormData((prev) => ({ ...prev, tagIds: [...new Set([...prev.tagIds, String(created.id)])] }));
+      setNewTagName('');
+    } catch (error) {
+      setFeedback(`Erro ao criar tag: ${error.message}`);
+    } finally {
+      setIsCreatingTag(false);
+    }
+  }
+
   function toggleTag(tagId) {
     setFormData((prev) => {
       const exists = prev.tagIds.includes(tagId);
@@ -98,7 +138,7 @@ const AdminPage = () => {
     setFeedback('');
 
     try {
-      await createProject(formData, token);
+      await createProject({ ...formData, imageKey: null }, token);
       setFeedback('Projeto criado com sucesso. Traducoes serao geradas automaticamente.');
       setFormData(initialForm);
       await loadData();
@@ -216,16 +256,36 @@ const AdminPage = () => {
             <textarea className="md:col-span-2 px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg min-h-28" name="description" value={formData.description} onChange={handleChange} placeholder="Descricao completa" required />
             <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="live" value={formData.live} onChange={handleChange} placeholder="URL de demonstracao" />
             <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="github" value={formData.github} onChange={handleChange} placeholder="URL do GitHub (opcional)" />
-            <select className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="imageKey" value={formData.imageKey} onChange={handleChange}>
-              {imageKeyOptions.map((key) => (
-                <option key={key || 'none'} value={key}>
-                  {key || 'Sem imagem local (usar URL)'}
-                </option>
-              ))}
-            </select>
-            <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="URL da imagem (opcional)" />
+            <label className="md:col-span-2 px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg text-gray-300 cursor-pointer">
+              <span className="block text-sm mb-2">Upload da imagem do projeto</span>
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full text-sm text-gray-200 file:mr-4 file:rounded-full file:border-0 file:bg-yellow-400 file:px-4 file:py-2 file:text-black"
+                onChange={handleImageUpload}
+              />
+              {formData.imageUrl && (
+                <span className="block mt-2 text-xs text-green-300">Imagem pronta para envio.</span>
+              )}
+            </label>
 
             <div className="md:col-span-2">
+              <div className="flex flex-wrap gap-2 mb-3">
+                <input
+                  className="flex-1 min-w-52 px-4 py-2 bg-black/50 border border-yellow-400/30 rounded-lg"
+                  placeholder="Nova tag (ex: NextJS)"
+                  value={newTagName}
+                  onChange={(event) => setNewTagName(event.target.value)}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={handleCreateTag}
+                  disabled={isCreatingTag}
+                >
+                  {isCreatingTag ? 'Adicionando...' : 'Adicionar tag'}
+                </button>
+              </div>
               <p className="mb-2 text-sm text-gray-300">Tags existentes (clique para adicionar):</p>
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => {

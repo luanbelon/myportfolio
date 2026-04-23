@@ -29,6 +29,32 @@ export async function fetchTags(token) {
   return response.json();
 }
 
+export async function createTag(name, token) {
+  const response = await fetch('/api/tags', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    let message = 'Could not create tag';
+    try {
+      const payload = await response.json();
+      if (payload?.error) {
+        message = payload.error;
+      }
+    } catch (error) {
+      // Keep default message when parsing fails
+    }
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
 export async function createProject(payload, token) {
   const response = await fetch('/api/projects', {
     method: 'POST',

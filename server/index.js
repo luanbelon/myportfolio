@@ -141,6 +141,26 @@ app.get('/api/tags', requireAdminAuth, async (req, res) => {
   }
 });
 
+app.post('/api/tags', requireAdminAuth, async (req, res) => {
+  const { name } = req.body || {};
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Tag name is required' });
+  }
+
+  try {
+    const result = await db.query(
+      `INSERT INTO tags (name)
+       VALUES ($1)
+       ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+       RETURNING id, name`,
+      [name.trim()]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create tag' });
+  }
+});
+
 app.get('/api/projects', async (req, res) => {
   const language = normalizeLanguage(req.query.lang);
 
