@@ -81,6 +81,56 @@ export async function createProject(payload, token) {
   return response.json();
 }
 
+export async function updateProject(payload, token) {
+  const response = await fetch('/api/projects', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    let message = 'Could not update project';
+    try {
+      const body = await response.json();
+      if (body?.error) {
+        message = body.error;
+      }
+    } catch (error) {
+      // keep default message
+    }
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export async function deleteProject(projectId, token) {
+  const response = await fetch(`/api/projects?id=${projectId}`, {
+    method: 'DELETE',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    let message = 'Could not delete project';
+    try {
+      const body = await response.json();
+      if (body?.error) {
+        message = body.error;
+      }
+    } catch (error) {
+      // keep default message
+    }
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
 export async function adminLogin(credentials) {
   const response = await fetch('/api/admin/login', {
     method: 'POST',

@@ -258,6 +258,93 @@ app.post('/api/projects', requireAdminAuth, async (req, res) => {
   }
 });
 
+app.put('/api/projects', requireAdminAuth, async (req, res) => {
+  const {
+    id,
+    title,
+    description,
+    category,
+    github,
+    live,
+    imageKey,
+    imageUrl,
+    tagIds = [],
+  } = req.body || {};
+
+  if (!id || !title || !description || !category) {
+    return res.status(400).json({ error: 'Id, title, description and category are required' });
+  }
+
+  const slug = title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 90);
+
+  const client = await db.pool.connect();
+  try {
+    await client.query('BEGIN');
+    const updateResult = await client.query(
+      `UPDATE projects
+       SET slug = $1,
+           title_pt = $2,
+           description_pt = $3,
+           category = $4,
+           github_url = $5,
+           live_url = $6,
+           image_key = $7,
+           image_url = $8,
+           updated_at = NOW()
+       WHERE id = $9
+       RETURNING id`,
+      [slug, title, description, category, github || null, live || null, imageKey || null, imageUrl || null, Number(id)]
+    );
+
+    if (!updateResult.rows[0]) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    await client.query('DELETE FROM project_tags WHERE project_id = $1', [Number(id)]);
+    for (const tagId of tagIds) {
+      await client.query(
+        `INSERT INTO project_tags (project_id, tag_id)
+         VALUES ($1, $2)
+         ON CONFLICT DO NOTHING`,
+        [Number(id), Number(tagId)]
+      );
+    }
+
+    await client.query('DELETE FROM project_translations WHERE project_id = $1', [Number(id)]);
+    await client.query('COMMIT');
+    res.status(200).json({ ok: true, id: Number(id) });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: 'Failed to update project' });
+  } finally {
+    client.release();
+  }
+});
+
+app.delete('/api/projects', requireAdminAuth, async (req, res) => {
+  const id = Number(req.query.id);
+  if (!id) {
+    return res.status(400).json({ error: 'Project id is required' });
+  }
+
+  try {
+    const result = await db.query('DELETE FROM projects WHERE id = $1 RETURNING id', [id]);
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    res.status(200).json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete project' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`);
 });

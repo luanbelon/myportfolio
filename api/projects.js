@@ -153,6 +153,109 @@ async function handlePost(req, res) {
   }
 }
 
+async function handlePut(req, res) {
+  const token = readBearerToken(req);
+  const payload = verifyAdminToken(token);
+  if (!payload) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const {
+    id,
+    title,
+    description,
+    category,
+    github,
+    live,
+    imageKey,
+    imageUrl,
+    tagIds = [],
+  } = req.body || {};
+
+  if (!id || !title || !description || !category) {
+    return res.status(400).json({ error: 'Id, title, description and category are required' });
+  }
+
+  const slug = title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 90);
+
+  const client = await db.pool.connect();
+  try {
+    await ensureSchema();
+    await ensureDefaultProjectsSeeded();
+    await client.query('BEGIN');
+
+    const updateResult = await client.query(
+      `UPDATE projects
+       SET slug = $1,
+           title_pt = $2,
+           description_pt = $3,
+           category = $4,
+           github_url = $5,
+           live_url = $6,
+           image_key = $7,
+           image_url = $8,
+           updated_at = NOW()
+       WHERE id = $9
+       RETURNING id`,
+      [slug, title, description, category, github || null, live || null, imageKey || null, imageUrl || null, Number(id)]
+    );
+
+    if (!updateResult.rows[0]) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    await client.query('DELETE FROM project_tags WHERE project_id = $1', [Number(id)]);
+    for (const tagId of tagIds) {
+      await client.query(
+        `INSERT INTO project_tags (project_id, tag_id)
+         VALUES ($1, $2)
+         ON CONFLICT DO NOTHING`,
+        [Number(id), Number(tagId)]
+      );
+    }
+
+    await client.query('DELETE FROM project_translations WHERE project_id = $1', [Number(id)]);
+    await client.query('COMMIT');
+    return res.status(200).json({ ok: true, id: Number(id) });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    return res.status(500).json({ error: `Failed to update project: ${error.message}` });
+  } finally {
+    client.release();
+  }
+}
+
+async function handleDelete(req, res) {
+  const token = readBearerToken(req);
+  const payload = verifyAdminToken(token);
+  if (!payload) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const id = Number(req.query.id);
+  if (!id) {
+    return res.status(400).json({ error: 'Project id is required' });
+  }
+
+  try {
+    await ensureSchema();
+    const result = await db.query('DELETE FROM projects WHERE id = $1 RETURNING id', [id]);
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    return res.status(500).json({ error: `Failed to delete project: ${error.message}` });
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     return handleGet(req, res);
@@ -160,6 +263,14 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'POST') {
     return handlePost(req, res);
+  }
+
+  if (req.method === 'PUT') {
+    return handlePut(req, res);
+  }
+
+  if (req.method === 'DELETE') {
+    return handleDelete(req, res);
   }
 
   return res.status(405).json({ error: 'Method not allowed' });

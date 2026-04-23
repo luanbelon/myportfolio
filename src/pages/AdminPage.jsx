@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { adminLogin, createProject, createTag, fetchProjects, fetchTags, verifyAdminToken } from '@/lib/api';
+import {
+  adminLogin,
+  createProject,
+  createTag,
+  deleteProject,
+  fetchProjects,
+  fetchTags,
+  updateProject,
+  verifyAdminToken,
+} from '@/lib/api';
 
 const categoryOptions = [
   { value: 'frontend', label: 'Frontend' },
@@ -32,6 +41,7 @@ const AdminPage = () => {
   const [feedback, setFeedback] = useState('');
   const [newTagName, setNewTagName] = useState('');
   const [isCreatingTag, setIsCreatingTag] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(null);
 
   const selectedTagsText = useMemo(() => {
     const selected = tags.filter((tag) => formData.tagIds.includes(String(tag.id)));
@@ -138,15 +148,66 @@ const AdminPage = () => {
     setFeedback('');
 
     try {
-      await createProject({ ...formData, imageKey: null }, token);
-      setFeedback('Projeto criado com sucesso. Traducoes serao geradas automaticamente.');
+      if (editingProjectId) {
+        await updateProject({ id: editingProjectId, ...formData, imageKey: null }, token);
+        setFeedback('Projeto atualizado com sucesso.');
+      } else {
+        await createProject({ ...formData, imageKey: null }, token);
+        setFeedback('Projeto criado com sucesso. Traducoes serao geradas automaticamente.');
+      }
       setFormData(initialForm);
+      setEditingProjectId(null);
       await loadData();
     } catch (error) {
       setFeedback(`Erro ao salvar projeto: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function startEditProject(project) {
+    const nameToTagId = new Map(tags.map((tag) => [tag.name.toLowerCase(), String(tag.id)]));
+    const selectedTagIds = (project.technologies || [])
+      .map((name) => nameToTagId.get(String(name).toLowerCase()))
+      .filter(Boolean);
+
+    setEditingProjectId(project.id);
+    setFormData({
+      title: project.title || '',
+      description: project.description || '',
+      category: project.category || 'frontend',
+      live: project.live || '',
+      github: project.github || '',
+      imageUrl: project.imageUrl || '',
+      tagIds: [...new Set(selectedTagIds)],
+    });
+    setFeedback('Modo edicao ativo.');
+  }
+
+  async function handleDeleteProject(projectId) {
+    const confirmed = window.confirm('Tem certeza que deseja excluir este projeto?');
+    if (!confirmed) {
+      return;
+    }
+
+    setFeedback('');
+    try {
+      await deleteProject(projectId, token);
+      if (editingProjectId === projectId) {
+        setEditingProjectId(null);
+        setFormData(initialForm);
+      }
+      setFeedback('Projeto excluido com sucesso.');
+      await loadData();
+    } catch (error) {
+      setFeedback(`Erro ao excluir projeto: ${error.message}`);
+    }
+  }
+
+  function cancelEdit() {
+    setEditingProjectId(null);
+    setFormData(initialForm);
+    setFeedback('Edicao cancelada.');
   }
 
   async function handleLogin(event) {
@@ -243,7 +304,9 @@ const AdminPage = () => {
         </div>
 
         <section className="card">
-          <h2 className="text-2xl font-semibold mb-4">Novo projeto (cadastro em PT-BR)</h2>
+          <h2 className="text-2xl font-semibold mb-4">
+            {editingProjectId ? 'Editar projeto (PT-BR)' : 'Novo projeto (cadastro em PT-BR)'}
+          </h2>
           <form className="grid md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
             <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="title" value={formData.title} onChange={handleChange} placeholder="Titulo do projeto" required />
             <select className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="category" value={formData.category} onChange={handleChange}>
@@ -311,9 +374,16 @@ const AdminPage = () => {
               </p>
             </div>
 
-            <button disabled={isSaving} className="btn md:col-span-2 disabled:opacity-60" type="submit">
-              {isSaving ? 'Salvando...' : 'Salvar projeto'}
-            </button>
+            <div className="md:col-span-2 flex gap-3">
+              <button disabled={isSaving} className="btn flex-1 disabled:opacity-60" type="submit">
+                {isSaving ? 'Salvando...' : editingProjectId ? 'Atualizar projeto' : 'Salvar projeto'}
+              </button>
+              {editingProjectId && (
+                <button type="button" className="btn btn-outline" onClick={cancelEdit}>
+                  Cancelar
+                </button>
+              )}
+            </div>
           </form>
           {feedback && <p className="mt-3 text-sm text-gray-300">{feedback}</p>}
         </section>
@@ -326,6 +396,22 @@ const AdminPage = () => {
                 <p className="font-semibold text-yellow-400">{project.title}</p>
                 <p className="text-sm text-gray-300 mt-1">{project.description}</p>
                 <p className="text-xs text-gray-400 mt-2">Categoria: {project.category}</p>
+                <div className="mt-4 flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline !py-2 !px-4 !text-sm"
+                    onClick={() => startEditProject(project)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline !py-2 !px-4 !text-sm border-red-400 text-red-300 hover:bg-red-500 hover:text-white"
+                    onClick={() => handleDeleteProject(project.id)}
+                  >
+                    Excluir
+                  </button>
+                </div>
               </div>
             ))}
           </div>
