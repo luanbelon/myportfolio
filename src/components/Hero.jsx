@@ -1,201 +1,107 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import luan2 from '../../src/assets/imgs/luan2.jpeg'
-
+import { easeOut } from '@/lib/motion';
+import { FREELANCER_URL } from '@/lib/links';
 
 const Hero = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const reduceMotion = useReducedMotion();
+  const roles = t('heroRoles');
+  const list = Array.isArray(roles) ? roles : [String(roles)];
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    setIndex(0);
+  }, [language]);
 
-  const scrollToSkills = () => {
-    const element = document.getElementById('skills');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    if (reduceMotion || list.length < 2) {
+      return undefined;
     }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, scale: 0.8, rotate: -10 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: {
-        duration: 1,
-        ease: "easeOut"
-      }
-    }
-  };
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % list.length);
+    }, 2600);
+    return () => window.clearInterval(timer);
+  }, [list.length, reduceMotion, language]);
 
   return (
-    <section id="inicio" className="min-h-[65vh] flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Partículas de fundo */}
-      <div className="particles">
-        <div className="particle"></div>
-        <div className="particle"></div>
-        <div className="particle"></div>
-        <div className="particle"></div>
-      </div>
-
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.1 }}
-          transition={{ duration: 2, delay: 0.5 }}
-          className="absolute top-20 left-20 w-72 h-72 bg-yellow-400 rounded-full blur-3xl"
-        ></motion.div>
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.1 }}
-          transition={{ duration: 2, delay: 1 }}
-          className="absolute bottom-20 right-20 w-96 h-96 bg-yellow-600 rounded-full blur-3xl"
-        ></motion.div>
-      </div>
-
-      <div className="container mx-auto px-6">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid md:grid-cols-2 gap-12 items-center"
+    <section
+      id="inicio"
+      className="min-h-[100svh] flex flex-col justify-center pt-20 pb-12"
+    >
+      <div className="container">
+        <motion.h1
+          className="font-display font-semibold tracking-[-0.05em]"
+          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, ease: easeOut }}
         >
-          {/* Text Content */}
-          <motion.div
-            variants={itemVariants}
-            className="space-y-6"
-          >
-            <motion.div
-              variants={itemVariants}
-              className="overflow-hidden"
-            >
-              <motion.h1
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                className="text-4xl md:text-6xl font-black leading-tight"
+          <span className="block text-[clamp(4.2rem,14vw,11rem)] leading-[0.86]">
+            {t('heroTitle')},
+          </span>
+          <span className="mt-4 md:mt-5 block overflow-hidden h-[1.12em] text-[clamp(2.1rem,6.8vw,5.25rem)] leading-[1.12] font-medium text-zinc-400">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={list[index]}
+                className="block"
+                initial={reduceMotion ? false : { y: '110%' }}
+                animate={{ y: 0 }}
+                exit={reduceMotion ? undefined : { y: '-110%' }}
+                transition={{ duration: 0.55, ease: easeOut }}
+                aria-live="polite"
               >
-                {t('heroTitle')}{' '}
-                <span className="animated-gradient-text animate-gradient block md:inline">
-                  Luan Belon
-                </span>
-              </motion.h1>
-            </motion.div>
+                {list[index]}
+              </motion.span>
+            </AnimatePresence>
+          </span>
+        </motion.h1>
 
-            <motion.p
-              variants={itemVariants}
-              className="text-xl md:text-2xl text-gray-300 font-light"
+        <motion.p
+          className="mt-8 md:mt-12 max-w-2xl text-xl md:text-2xl text-zinc-400 leading-relaxed"
+          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: easeOut, delay: 0.12 }}
+        >
+          {t('heroManifesto')}
+        </motion.p>
+
+        <motion.p
+          className="mt-4 text-base md:text-lg text-muted"
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: easeOut, delay: 0.18 }}
+        >
+          {t('heroLocation')}
+        </motion.p>
+
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: easeOut, delay: 0.24 }}
+        >
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 mt-8">
+            <a
+              href={FREELANCER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
             >
-              {t('heroSubtitle')}
-            </motion.p>
-
-            <motion.p
-              variants={itemVariants}
-              className="text-lg text-gray-400 max-w-lg leading-relaxed"
+              {t('hireMe')}
+              <ArrowUpRight size={14} />
+            </a>
+            <Link
+              to="/trabalho"
+              className="inline-flex items-center gap-1 text-sm text-muted hover:text-paper"
             >
-              {t('heroDescription')}
-            </motion.p>
-
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-wrap gap-4"
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={scrollToSkills}
-                className="btn"
-              >
-                {t('viewProjects')}
-              </motion.button>
-              <motion.a
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                href="#contato"
-                className="btn btn-outline"
-              >
-                {t('getInTouch')}
-              </motion.a>
-            </motion.div>
-          </motion.div>
-
-          {/* Profile Image */}
-          <motion.div
-            variants={imageVariants}
-            className="flex justify-center"
-          >
-            <div className="relative">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full border-4 border-dashed border-yellow-400/30"
-              ></motion.div>
-              
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-2 rounded-full border-2 border-dotted border-yellow-500/20"
-              ></motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-yellow-400 shadow-2xl glow-effect"
-              >
-                <motion.img  
-                  initial={{ scale: 1.2, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  alt="Luan Belon - Desenvolvedor Front-end e UX Designer"
-                  className="w-full h-full object-cover"
-                  src={luan2} 
-                />
-              </motion.div>
-
-              {/* Floating elements */}
-              <motion.div
-                animate={{ y: [-10, 10, -10] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full opacity-80"
-              ></motion.div>
-              
-              <motion.div
-                animate={{ y: [10, -10, 10] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-4 -left-4 w-6 h-6 bg-yellow-500 rounded-full opacity-60"
-              ></motion.div>
-            </div>
-          </motion.div>
+              {t('viewWork')}
+              <ArrowUpRight size={14} />
+            </Link>
+          </div>
         </motion.div>
       </div>
-
     </section>
   );
 };

@@ -1,10 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { CONTACT_SCROLL_KEY } from '@/components/ScrollManager';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,175 +11,94 @@ const Header = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
-  const isHome = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 12);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId) => {
-    if (!isHome) {
-      navigate('/');
-      return;
-    }
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
-    }
-  };
-
-  const headerVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const menuItemVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  };
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const menuItems = [
-    { id: 'inicio', label: t('home') },
-    { id: 'skills', label: t('skills') },
-    { id: 'projetos', label: t('projects') },
-    { id: 'depoimentos', label: t('testimonials') },
-    { id: 'contato', label: t('contact') }
+    { to: '/trabalho', label: t('work') },
+    { to: '/artigos', label: t('articles') },
+    { to: '/curriculo', label: t('resume') },
   ];
 
+  const isActive = (to) => location.pathname.startsWith(to);
+
+  const goToContact = (event) => {
+    event.preventDefault();
+    setIsMobileMenuOpen(false);
+    if (location.pathname === '/') {
+      document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    sessionStorage.setItem(CONTACT_SCROLL_KEY, '1');
+    navigate('/');
+  };
+
   return (
-    <motion.header
-      variants={headerVariants}
-      initial="hidden"
-      animate="visible"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-[60px] flex items-center ${
-        isScrolled 
-          ? 'bg-black/90 backdrop-blur-md border-b border-yellow-500/20' 
-          : 'bg-transparent'
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center transition-colors duration-500 no-print ${
+        isScrolled ? 'bg-ink/80 backdrop-blur-md' : 'bg-transparent'
       }`}
     >
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold"
-          >
-            <motion.span 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-yellow-400"
-            >
-              LUAN
-            </motion.span>
-            <motion.span 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-white ml-2"
-            >
-              BELON
-            </motion.span>
-          </motion.div>
+      <nav className="w-full max-w-[1320px] mx-auto px-5 md:px-7 flex items-center justify-between">
+        <Link to="/" className="font-display text-[0.95rem] tracking-tight">
+          Luan Belon
+        </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {menuItems.map((item, index) => (
-              <motion.button
-                key={item.id}
-                variants={menuItemVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.6 + index * 0.1 }}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scrollToSection(item.id)}
-                className="text-white hover:text-yellow-400 transition-colors duration-300 capitalize font-medium relative"
-              >
-                {item.label}
-                <motion.div
-                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-400"
-                  whileHover={{ width: "100%" }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.button>
-            ))}
-            <Link className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium" to="/curriculo">
-              Curriculo
+        <div className="hidden md:flex items-center gap-9">
+          {menuItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`text-[0.92rem] transition-colors ${
+                isActive(item.to) ? 'text-paper' : 'text-zinc-400 hover:text-paper'
+              }`}
+            >
+              {item.label}
             </Link>
-            <LanguageToggle />
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-4">
-            <LanguageToggle />
-            <motion.button
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="text-white hover:text-yellow-400 transition-colors"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <motion.div
-                animate={{ rotate: isMobileMenuOpen ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.div>
-            </motion.button>
-          </div>
+          ))}
+          <button type="button" onClick={goToContact} className="text-[0.92rem] text-zinc-400 hover:text-paper">
+            {t('contact')}
+          </button>
+          <LanguageToggle />
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden mt-4 py-4 border-t border-yellow-500/20"
+        <div className="md:hidden flex items-center gap-3">
+          <LanguageToggle />
+          <button
+            className="text-paper"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            aria-label={t('menu')}
           >
-            {menuItems.map((item, index) => (
-              <motion.button
-                key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => scrollToSection(item.id)}
-                className="block w-full text-left py-2 text-white hover:text-yellow-400 transition-colors"
-              >
-                {item.label}
-              </motion.button>
-            ))}
-            <Link
-              to="/curriculo"
-              className="block w-full text-left py-2 text-white hover:text-yellow-400 transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Curriculo
-            </Link>
-          </motion.div>
-        )}
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </nav>
-    </motion.header>
+
+      {isMobileMenuOpen && (
+        <div className="absolute top-[72px] left-0 right-0 bg-ink/95 backdrop-blur-md md:hidden">
+          <div className="px-6 py-6 flex flex-col gap-4">
+            {menuItems.map((item) => (
+              <Link key={item.to} to={item.to} className="text-lg text-paper">
+                {item.label}
+              </Link>
+            ))}
+            <button type="button" onClick={goToContact} className="text-lg text-paper text-left">
+              {t('contact')}
+            </button>
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 

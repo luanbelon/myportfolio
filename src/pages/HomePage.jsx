@@ -1,27 +1,20 @@
 import React from 'react';
-import Header from '@/components/Header';
+import SiteLayout from '@/components/SiteLayout';
 import Hero from '@/components/Hero';
-import Skills from '@/components/Skills';
-import Projects from '@/components/Projects';
+import About from '@/components/About';
 import Testimonials from '@/components/Testimonials';
+import RecentArticles from '@/components/RecentArticles';
 import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
-import AccessibilityControls from '@/components/AccessibilityControls';
-import { Toaster } from '@/components/ui/toaster';
 
 const HomePage = () => {
   return (
-    <div className="portfolio">
-      <AccessibilityControls />
-      <Header />
+    <SiteLayout>
       <Hero />
-      <Skills />
-      <Projects />
+      <About />
       <Testimonials />
+      <RecentArticles />
       <Contact />
-      <Footer />
-      <Toaster />
-    </div>
+    </SiteLayout>
   );
 };
 

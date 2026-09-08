@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
@@ -13,355 +12,596 @@ export const useLanguage = () => {
 
 const translations = {
   pt: {
-  // Header
-  home: 'Início',
-  skills: 'Habilidades',
-  projects: 'Projetos',
-  contact: 'Contato',
-  testimonials: 'Depoimentos',
+    home: 'Início',
+    work: 'Trabalho',
+    articles: 'Artigos',
+    resume: 'Currículo',
+    downloadResume: 'Baixar PDF',
+    resumeFileName: 'Luan-Belon-Curriculo',
+    contact: 'Contato',
+    skills: 'Sobre',
+    testimonials: 'Depoimentos',
 
-  // Hero
-  heroTitle: 'Eu sou',
-  heroSubtitle: 'Analista de Sistemas & UX Designer',
-  heroDescription: 'Especializado em criar experiências digitais incríveis usando React, Angular, WordPress e ferramentas de design. Transformo ideias em interfaces funcionais e visualmente impactantes.',
-  viewProjects: 'Ver Meus Projetos',
-  getInTouch: 'Entre em Contato',
+    heroTitle: 'Luan Belon',
+    heroSubtitle: 'Engenheiro Frontend Pleno e UX/UI Designer',
+    heroDescription: 'Transformo requisitos de negócio e design em interfaces rápidas, acessíveis e que convertem: sites, e-commerces e produtos digitais.',
+    heroManifesto: 'Ajudo marcas a se destacarem na era digital.',
+    heroLocation: 'Salvador, Brasil',
+    availability: 'Baseado no Brasil · disponível para remoto e freelance',
+    heroDiscipline: 'Frontend · UX',
+    heroRoles: ['Designer UX/UI', 'Engenheiro Frontend', 'Desenvolvedor WordPress'],
+    viewWork: 'Ver trabalho',
+    viewProjects: 'Ver trabalho',
+    hireMe: 'Contratar',
+    getInTouch: 'Contato',
+    siteTitle: 'Luan Belon — Engenheiro Frontend Pleno e UX/UI Designer',
+    siteDescription: 'Luan Belon — engenheiro frontend pleno e UX/UI baseado no Brasil, disponível para remoto e freelance. Sites, e-commerce e produto digital do Figma ao código. 47 avaliações 5.0 no Freelancer.',
+    menu: 'Menu',
+    languageLabel: 'Idioma',
+    education: 'Formação',
+    eduMba: 'MBA em UX',
+    eduDegree: 'Sistemas para Internet',
+    eduCubos: 'Design UX/UI',
+    eduUdacity: 'Nanodegree de Marketing Digital',
+    research: 'Pesquisa',
+    roleFounder: 'Fundador',
+    roleCeo: 'CEO',
+    rolePm: 'Gerente de produto',
+    roleClient: 'Cliente',
 
-  // Skills
-  skillsTitle: 'Minhas Habilidades',
-  frontendDev: 'Desenvolvimento Front-end',
-  designUx: 'Design & UX',
-  cmsEcommerce: 'CMS & E-commerce',
-  softSkills: 'Soft Skills',
-  professionalExperience: 'Experiência Profissional',
+    aboutTitle: 'Sobre',
+    aboutLead: 'Engenheiro frontend pleno, com MBA em UX e oito anos de web. Transformo design e requisitos de negócio em sites, lojas e produtos digitais — do Figma ao código, com performance, acessibilidade e prazo. Baseado no Brasil, disponível para remoto e freelance.',
+    skillsTitle: 'Capacidades',
+    frontendDev: 'Frontend',
+    designUx: 'UX e interface',
+    cmsEcommerce: 'CMS e e-commerce',
+    professionalExperience: 'Percurso',
+    present: 'atual',
+    proofYears: 'anos de carreira',
+    proofReviews: 'avaliações no Freelancer',
+    proofRating: 'nota média',
+    proofOnTime: 'entregas no prazo',
+    proofMba: 'em UX',
+    exp1_role: 'Engenheiro Frontend Pleno',
+    exp1_desc: 'Na Netra, transformo requisitos de negócio e design em interfaces com Angular, TypeScript, JavaScript e WordPress. Foco em performance, acessibilidade e código que o time consegue manter.',
+    exp2_role: 'Desenvolvedor front-end e UX (Freelance)',
+    exp2_desc: 'Desde 2017 no Freelancer.com: 47 avaliações 5.0. Sites e e-commerces para clientes nos EUA, México e Brasil. Figma para WordPress, WooCommerce, Elementor, SEO e otimização.',
+    exp3_role: 'Desenvolvedor WordPress',
+    exp3_desc: 'Criação de websites e e-commerces com WordPress, Elementor e WooCommerce.',
+    exp4_role: 'Desenvolvedor WordPress',
+    exp4_desc: 'Sites e layouts responsivos para clientes da agência, do visual ao HTML, CSS e JavaScript.',
 
-  // Experiência Profissional (role e description traduzíveis)
-  exp1_role: 'Analista de Sistemas Front End',
-  exp1_desc: 'Criação de peças gráficas com ferramentas Adobe e manutenção de portais WordPress. Desenvolvimento de layouts com HTML, CSS, JavaScript, Angular e NextJS.',
-  exp2_role: 'Desenvolvedor Wordpress Freelancer',
-  exp2_desc: 'Criação e manutenção de portais e E-commerces WordPress.',
-  exp3_role: 'Desenvolvedor Wordpress Freelancer',
-  exp3_desc: 'Criação de websites e lojas virtuais com WordPress, Elementor e WooCommerce.',
-  exp4_role: 'Desenvolvedor Wordpress',
-  exp4_desc: 'Desenvolvimento de websites e lojas virtuais. Criação de layouts responsivos usando HTML, CSS, JavaScript, Angular e NextJS.',
+    selectedWork: 'Trabalho selecionado',
+    selectedWorkLead: 'Uma amostra de sites, cases e protótipos. O restante está no índice.',
+    viewAllWork: 'Ver todo o trabalho',
+    workTitle: 'Trabalho',
+    workLead: 'Sites, e-commerces e produtos digitais — do Figma ao código.',
+    all: 'Todos',
+    emptyWork: 'Nenhum trabalho neste filtro por enquanto.',
+    backToWork: 'Voltar ao trabalho',
+    liveSite: 'Ver site',
+    openFigma: 'Abrir no Figma',
+    readOnMedium: 'Ler no Medium',
+    beforeLabel: 'Antes',
+    afterLabel: 'Depois',
+    yearLabel: 'Ano',
+    clientLabel: 'Cliente',
+    roleLabel: 'Papel',
+    galleryLabel: 'Galeria',
+    prototypeLabel: 'Protótipo',
 
-  // Projects
-  projectsTitle: 'Projetos',
-  all: 'Todos',
-  Sunbeat: 'Sunbeat Energy',
-  SunbeatDesc: 'Landing page para uma empresa que vende serviços de energia.',
-  Overall: 'Overall Contractors',
-  overallDesc: 'Criação de site wordpress para empresa de construção',
-  analyticsDashboard: 'Dashboard Analytics',
-  dashboardDesc: 'Painel administrativo com gráficos interativos e relatórios em tempo real.',
-  caricoos: 'Site Corporativo',
-  caricoosDesc: 'Website institucional responsivo com CMS personalizado.',
-  ecofit: 'Prototipo mobile ecofit',
-  ecofitDesc: 'Criação de prototipo com figma para app de academia fitness',
-  coletafacil: 'Coleta Fácil',
-  coletafacilDesc: 'Projeto UX, desenvolver desde pesquisas para entender o usuario até o prototivo navegavel do projeto que visa facilitar a forma que as pessoas podem levar seu lixo para a reciclagem.',
-  bffdeli: 'Black Forest Food',
-  bffdeliDesc: 'Pagina para restaurante no Colorado, a pagina deixou o negocio mais atrativo e com isso mais clientes começaram a fazer pedidos online.',
-  managementSystem: 'Sistema de Gestão',
-  managementDesc: 'Plataforma de gestão empresarial com múltiplos módulos.',
-  likedWhat: 'Gostou do que viu? Vamos trabalhar juntos!',
+    typeWebsite: 'Site',
+    typeBeforeAfter: 'Antes e depois',
+    typeLayout: 'Layout',
+    typeCaseStudy: 'Case UX/UI',
+    typePrototype: 'Protótipo',
+    typeArticle: 'Artigo',
 
-  // Testimonials
-  testimonialsTitle: 'Depoimentos',
-  testimonial1: 'O excelente trabalho do Luan atendeu às minhas expectativas; adorei como ela o projetou e organizou. Continuarei trabalhando com você para melhorar constantemente o meu site.',
-  testimonial2: 'Luan é uma pessoa muito dedicada, paciente e trabalhadora. Gostamos muito de trabalhar com ele e estamos muito satisfeitos com o resultado dos nossos projetos.',
-  testimonial3: 'O Luan é o melhor! Ele é um profissional muito talentoso, paciente e dedicado. O resultado final do site que criei para nós é impressionante; ele seguiu todos os requisitos e fez alterações quando solicitado. Nós o contrataremos novamente no futuro.',
-  testimonial4: 'Adorei trabalhar com o Luan sem dúvida que vou voltar a contactar!',
-  previousTestimonial: 'Depoimento anterior',
-  nextTestimonial: 'Próximo depoimento',
-  goToTestimonial: 'Ir para depoimento',
+    articlesTitle: 'Escrita',
+    articlesLead: 'Notas e artigos publicados no Medium sobre produto, interface e frontend.',
+    recentWriting: 'Escrita recente',
+    emptyArticles: 'Nenhum artigo publicado ainda.',
 
-  // Contact
-  hireMeTitle: 'Contate-me',
-  workTogether: 'Vamos trabalhar juntos!',
-  contactDescription: 'Estou sempre aberto a novos desafios e oportunidades. Se você tem um projeto em mente ou quer apenas conversar sobre tecnologia, não hesite em entrar em contato!',
-  socialNetworks: 'Minhas Redes Sociais',
-  sendMessage: 'Envie uma Mensagem',
-  name: 'Nome',
-  email: 'Email',
-  subject: 'Assunto',
-  message: 'Mensagem',
-  yourName: 'Seu nome',
-  yourEmail: 'seu@email.com',
-  messageSubject: 'Assunto da mensagem',
-  projectMessage: 'Conte-me sobre seu projeto...',
-  sendMessageBtn: 'Enviar Mensagem',
-  messageSent: 'Mensagem enviada com sucesso!',
-  messageError: 'Erro ao enviar mensagem. Tente novamente.',
+    testimonialsTitle: 'Depoimentos',
+    testimonial1: 'O excelente trabalho do Luan atendeu às minhas expectativas; adorei como ele projetou e organizou. Continuarei trabalhando com você para melhorar constantemente o meu site.',
+    testimonial2: 'Luan é uma pessoa muito dedicada, paciente e trabalhadora. Gostamos muito de trabalhar com ele e estamos muito satisfeitos com o resultado dos nossos projetos.',
+    testimonial3: 'O Luan é o melhor! Ele é um profissional muito talentoso, paciente e dedicado. O resultado final do site que criou para nós é impressionante; ele seguiu todos os requisitos e fez alterações quando solicitado. Nós o contrataremos novamente no futuro.',
+    testimonial4: 'Adorei trabalhar com o Luan; sem dúvida vou voltar a contactar.',
+    testimonial5: 'Profissional excelente. Entregou o site igual ao layout do Figma, na metade do prazo, e fez todas as alterações que pedimos.',
+    previousTestimonial: 'Depoimento anterior',
+    nextTestimonial: 'Próximo depoimento',
+    goToTestimonial: 'Ir para depoimento',
 
-  // Footer
-  madeWith: 'Feito com',
-  by: 'por',
-  allRights: 'Todos os direitos reservados.',
-  frontendDeveloper: 'Desenvolvedor Front-end',
-  uxDesigner: 'UX Designer',
-  systemsAnalyst: 'Analista de Sistemas',
+    hireMeTitle: 'Contato',
+    workTogether: 'Vamos construir o próximo projeto.',
+    contactDescription: 'Baseado no Brasil, disponível para remoto e freelance. Sites, e-commerce e produto digital — Figma para WordPress ou frontend em Angular e React.',
+    socialNetworks: 'Redes',
+    sendMessage: 'Mensagem',
+    name: 'Nome',
+    email: 'Email',
+    subject: 'Assunto',
+    message: 'Mensagem',
+    yourName: 'Seu nome',
+    yourEmail: 'seu@email.com',
+    messageSubject: 'Assunto',
+    projectMessage: 'Conte sobre o projeto…',
+    sendMessageBtn: 'Enviar',
+    sending: 'Enviando…',
+    messageSent: 'Mensagem enviada.',
+    messageError: 'Não foi possível enviar. Tente novamente.',
 
-  // Accessibility
-  accessibility: 'Acessibilidade',
-  accessibilityControls: 'Controles de Acessibilidade',
-  fontSize: 'Tamanho da Fonte',
-  increaseFontSize: 'Aumentar fonte',
-  decreaseFontSize: 'Diminuir fonte',
-  highContrast: 'Alto Contraste',
-  toggleHighContrast: 'Alternar alto contraste',
-  reset: 'Redefinir',
+    madeWith: 'Luan Belon',
+    by: '—',
+    allRights: 'Todos os direitos reservados.',
+    frontendDeveloper: 'Frontend',
+    uxDesigner: 'UX Designer',
+    systemsAnalyst: 'Analista de Sistemas',
 
-  // Toast messages
-  linkInDevelopment: '🚧 Link em desenvolvimento!',
-  linkDescription: 'Este link ainda não foi implementado—mas não se preocupe! Você pode solicitá-lo no seu próximo prompt! 🚀',
-  formInDevelopment: '🚧 Formulário em desenvolvimento!',
-  formDescription: 'Esta funcionalidade ainda não foi implementada—mas não se preocupe! Você pode solicitá-la no seu próximo prompt! 🚀',
-  featureInDevelopment: '🚧 Funcionalidade em desenvolvimento!',
-  featureDescription: 'Esta funcionalidade ainda não foi implementada—mas não se preocupe! Você pode solicitá-la no seu próximo prompt! 🚀'
-},
+    accessibility: 'Acessibilidade',
+    accessibilityControls: 'Controles de acessibilidade',
+    fontSize: 'Tamanho da fonte',
+    increaseFontSize: 'Aumentar fonte',
+    decreaseFontSize: 'Diminuir fonte',
+    highContrast: 'Alto contraste',
+    toggleHighContrast: 'Alternar alto contraste',
+    reset: 'Redefinir',
+
+    linkInDevelopment: 'Link em desenvolvimento',
+    linkDescription: 'Este destino ainda não está disponível.',
+    formInDevelopment: 'Formulário em desenvolvimento',
+    formDescription: 'Esta funcionalidade ainda não foi implementada.',
+    featureInDevelopment: 'Funcionalidade em desenvolvimento',
+    featureDescription: 'Esta funcionalidade ainda não foi implementada.',
+  },
   en: {
-    // Header
     home: 'Home',
-    skills: 'Skills',
-    projects: 'Projects',
+    work: 'Work',
+    articles: 'Writing',
+    resume: 'Resume',
+    downloadResume: 'Download PDF',
+    resumeFileName: 'Luan-Belon-Resume',
     contact: 'Contact',
+    skills: 'About',
     testimonials: 'Testimonials',
-    
-    // Hero
-    heroTitle: 'I am',
-    heroSubtitle: 'Systems Analyst & UX Designer',
-    heroDescription: 'Specialized in creating incredible digital experiences using React, Angular, WordPress and design tools. I transform ideas into functional and visually impactful interfaces.',
-    viewProjects: 'View My Projects',
-    getInTouch: 'Get In Touch',
-    
-    // Skills
-    skillsTitle: 'My Skills',
-    frontendDev: 'Frontend Development',
-    designUx: 'Design & UX',
-    cmsEcommerce: 'CMS & E-commerce',
-    softSkills: 'Soft Skills',
-    professionalExperience: 'Professional Experience',
-    
-    // Projects
-    projectsTitle: 'Projects',
+
+    heroTitle: 'Luan Belon',
+    heroSubtitle: 'Mid-level Frontend Engineer and UX/UI Designer',
+    heroDescription: 'I turn business requirements and design into fast, accessible interfaces that convert: websites, stores and digital products.',
+    heroManifesto: 'Helping brands stand out in the digital era.',
+    heroLocation: 'Salvador, Brazil',
+    availability: 'Based in Brazil · available for remote work and freelance',
+    heroDiscipline: 'Frontend · UX',
+    heroRoles: ['UX/UI Designer', 'Frontend Engineer', 'WordPress Developer'],
+    viewWork: 'View work',
+    viewProjects: 'View work',
+    hireMe: 'Hire me',
+    getInTouch: 'Contact',
+    siteTitle: 'Luan Belon — Frontend Engineer and UX/UI Designer',
+    siteDescription: 'Luan Belon — frontend engineer and UX/UI designer based in Brazil, available for remote work and freelance. Websites, e-commerce and digital products from Figma to code. 47 Freelancer reviews at 5.0.',
+    menu: 'Menu',
+    languageLabel: 'Language',
+    education: 'Education',
+    eduMba: 'MBA in UX',
+    eduDegree: 'Internet Systems',
+    eduCubos: 'UX/UI Design',
+    eduUdacity: 'Digital Marketing Nanodegree',
+    research: 'Research',
+    roleFounder: 'Founder',
+    roleCeo: 'CEO',
+    rolePm: 'Product Manager',
+    roleClient: 'Client',
+
+    aboutTitle: 'About',
+    aboutLead: 'Mid-level frontend engineer with an MBA in UX and eight years on the web. I turn design and business requirements into sites, stores and products — from Figma to code, with performance, accessibility and on-time delivery. Based in Brazil, available for remote work and freelance.',
+    skillsTitle: 'Capabilities',
+    frontendDev: 'Frontend',
+    designUx: 'UX and interface',
+    cmsEcommerce: 'CMS and e-commerce',
+    professionalExperience: 'Path',
+    present: 'Present',
+    proofYears: 'years in the field',
+    proofReviews: 'Freelancer reviews',
+    proofRating: 'average rating',
+    proofOnTime: 'on-time delivery',
+    proofMba: 'in UX',
+    exp1_role: 'Frontend Engineer',
+    exp1_desc: 'At Netra I turn business requirements and design into interfaces with Angular, TypeScript, JavaScript and WordPress. Focus on performance, accessibility and code the team can maintain.',
+    exp2_role: 'Front-end developer & UX design (Freelance)',
+    exp2_desc: 'On Freelancer.com since 2017: 47 reviews at 5.0. Websites and stores for clients in the US, Mexico and Brazil. Figma to WordPress, WooCommerce, Elementor, SEO and optimization.',
+    exp3_role: 'WordPress developer',
+    exp3_desc: 'Websites and stores with WordPress, Elementor and WooCommerce.',
+    exp4_role: 'WordPress developer',
+    exp4_desc: 'Responsive sites and layouts for agency clients, from visual design to HTML, CSS and JavaScript.',
+
+    selectedWork: 'Selected work',
+    selectedWorkLead: 'A sample of sites, case studies and prototypes. The rest lives in the index.',
+    viewAllWork: 'View all work',
+    workTitle: 'Work',
+    workLead: 'Websites, stores and digital products — from Figma to code.',
     all: 'All',
-    Sunbeat: 'Sunbeat Energy',
-    SunbeatDesc: 'Landing page for a company that sells energy services.',
-    Overall: 'Overall Contractors',
-    overallDesc: 'WordPress website creation for construction company',
-    analyticsDashboard: 'Analytics Dashboard',
-    dashboardDesc: 'Administrative panel with interactive charts and real-time reports.',
-    caricoos: 'Corporate Website',
-    caricoosDesc: 'Responsive institutional website with custom CMS.',
-    ecofit: 'Ecofit mobile prototype',
-    ecofitDesc: 'Prototype creation with figma for fitness gym app',
-    coletafacil: 'Coleta Fácil',
-    coletafacilDesc: 'UX project, developing everything from research to understand the user to the projects navigable prototype that aims to facilitate the way people can take their trash for recycling.',
-    bffdeli: 'Black Forest Food',
-    bffdeliDesc: 'Page for a restaurant in Colorado, the page made the business more attractive and with that more customers started to place orders online.',
-    managementSystem: 'Management System',
-    managementDesc: 'Business management platform with multiple modules.',
-    likedWhat: 'Liked what you saw? Let\'s work together!',
+    emptyWork: 'No work in this filter yet.',
+    backToWork: 'Back to work',
+    liveSite: 'View site',
+    openFigma: 'Open in Figma',
+    readOnMedium: 'Read on Medium',
+    beforeLabel: 'Before',
+    afterLabel: 'After',
+    yearLabel: 'Year',
+    clientLabel: 'Client',
+    roleLabel: 'Role',
+    galleryLabel: 'Gallery',
+    prototypeLabel: 'Prototype',
 
-    // Experiência Profissional (role e description traduzíveis)
-    // Experience Translations
-    exp1_role: 'Frontend Systems Analyst',
-    exp1_desc: 'Created graphic pieces using Adobe tools and maintained WordPress portals. Developed layouts with HTML, CSS, JavaScript, Angular, and NextJS.',
-    exp2_role: 'Freelance WordPress Developer',
-    exp2_desc: 'Created and maintained WordPress portals and e-commerce websites.',
-    exp3_role: 'Freelance WordPress Developer',
-    exp3_desc: 'Built websites and online stores using WordPress, Elementor, and WooCommerce.',
-    exp4_role: 'WordPress Developer',
-    exp4_desc: 'Developed websites and e-commerce stores. Created responsive layouts using HTML, CSS, JavaScript, Angular, and NextJS.',
+    typeWebsite: 'Website',
+    typeBeforeAfter: 'Before & after',
+    typeLayout: 'Layout',
+    typeCaseStudy: 'UX/UI case',
+    typePrototype: 'Prototype',
+    typeArticle: 'Article',
 
-    // Testimonials
+    articlesTitle: 'Writing',
+    articlesLead: 'Notes and articles on Medium about product, interface and frontend.',
+    recentWriting: 'Recent writing',
+    emptyArticles: 'No articles published yet.',
+
     testimonialsTitle: 'Testimonials',
-    testimonial1: 'Luan is a excellent work met my expectations; I loved how she designed and organized it. I will continue to work with you to constantly improve my site.',
-    testimonial2: 'Luan is a very dedicated, patient and hard-working person. We really enjoyed working with him and are very pleased with the results of our projects.',
-    testimonial3: 'Luan is the best! He is a very talented, patient and dedicated professional. The end result of the website he created for us is impressive; he followed all the requirements and made changes when requested. We will hire him again in the future.',
-    testimonial4: 'I loved working with Luan and I will definitely contact him again!',
+    testimonial1: 'Luan’s work met my expectations; I loved how he designed and organized it. I will continue to work with you to improve my site.',
+    testimonial2: 'Luan is dedicated, patient and hard-working. We enjoyed working with him and are pleased with the results.',
+    testimonial3: 'Luan is the best. A talented, patient and dedicated professional. The website he created for us is impressive; he followed the brief and made changes when asked. We will hire him again.',
+    testimonial4: 'I loved working with Luan and I will definitely get in touch again.',
+    testimonial5: 'An excellent professional. He delivered a website that matched the Figma layout, in half the agreed time, and made every change we asked for.',
     previousTestimonial: 'Previous testimonial',
     nextTestimonial: 'Next testimonial',
     goToTestimonial: 'Go to testimonial',
-    
-    // Contact
-    hireMeTitle: 'Contact Me',
-    workTogether: 'Let\'s work together!',
-    contactDescription: 'I\'m always open to new challenges and opportunities. If you have a project in mind or just want to talk about technology, don\'t hesitate to get in touch!',
-    socialNetworks: 'My Social Networks',
-    sendMessage: 'Send a Message',
+
+    hireMeTitle: 'Contact',
+    workTogether: 'Let’s build the next project.',
+    contactDescription: 'Based in Brazil, available for remote work and freelance. Websites, e-commerce and digital products — Figma to WordPress, or frontend in Angular and React.',
+    socialNetworks: 'Networks',
+    sendMessage: 'Message',
     name: 'Name',
     email: 'Email',
     subject: 'Subject',
     message: 'Message',
     yourName: 'Your name',
-    yourEmail: 'your@email.com',
-    messageSubject: 'Message subject',
-    projectMessage: 'Tell me about your project...',
-    sendMessageBtn: 'Send Message',
-    messageSent: 'Message sent successfully!',
-    messageError: 'Error sending message. Please try again.',
-    
-    // Footer
-    madeWith: 'Made with',
-    by: 'by',
+    yourEmail: 'you@email.com',
+    messageSubject: 'Subject',
+    projectMessage: 'Tell me about the project…',
+    sendMessageBtn: 'Send',
+    sending: 'Sending…',
+    messageSent: 'Message sent.',
+    messageError: 'Could not send. Please try again.',
+
+    madeWith: 'Luan Belon',
+    by: '—',
     allRights: 'All rights reserved.',
-    frontendDeveloper: 'Frontend Developer',
+    frontendDeveloper: 'Frontend',
     uxDesigner: 'UX Designer',
     systemsAnalyst: 'Systems Analyst',
-    
-    // Accessibility
+
     accessibility: 'Accessibility',
-    accessibilityControls: 'Accessibility Controls',
-    fontSize: 'Font Size',
+    accessibilityControls: 'Accessibility controls',
+    fontSize: 'Font size',
     increaseFontSize: 'Increase font size',
     decreaseFontSize: 'Decrease font size',
-    highContrast: 'High Contrast',
+    highContrast: 'High contrast',
     toggleHighContrast: 'Toggle high contrast',
     reset: 'Reset',
-    
-    // Toast messages
-    linkInDevelopment: '🚧 Link under development!',
-    linkDescription: 'This link hasn\'t been implemented yet—but don\'t worry! You can request it in your next prompt! 🚀',
-    formInDevelopment: '🚧 Form under development!',
-    formDescription: 'This functionality hasn\'t been implemented yet—but don\'t worry! You can request it in your next prompt! 🚀',
-    featureInDevelopment: '🚧 Feature under development!',
-    featureDescription: 'This functionality hasn\'t been implemented yet—but don\'t worry! You can request it in your next prompt! 🚀'
+
+    linkInDevelopment: 'Link under development',
+    linkDescription: 'This destination is not available yet.',
+    formInDevelopment: 'Form under development',
+    formDescription: 'This feature has not been implemented yet.',
+    featureInDevelopment: 'Feature under development',
+    featureDescription: 'This feature has not been implemented yet.',
   },
   es: {
-    // Header
     home: 'Inicio',
-    skills: 'Habilidades',
-    projects: 'Proyectos',
+    work: 'Trabajo',
+    articles: 'Artículos',
+    resume: 'Currículum',
+    downloadResume: 'Descargar PDF',
+    resumeFileName: 'Luan-Belon-Curriculum',
     contact: 'Contacto',
+    skills: 'Sobre',
     testimonials: 'Testimonios',
-    
-    // Hero
-    heroTitle: 'Soy',
-    heroSubtitle: 'Analista de Sistemas y Diseñador UX',
-    heroDescription: 'Especializado en crear experiencias digitales increíbles usando React, Angular, WordPress y herramientas de diseño. Transformo ideas en interfaces funcionales y visualmente impactantes.',
-    viewProjects: 'Ver Mis Proyectos',
-    getInTouch: 'Ponte en Contacto',
-    
-    // Skills
-    skillsTitle: 'Mis Habilidades',
-    frontendDev: 'Desarrollo Frontend',
-    designUx: 'Diseño y UX',
-    cmsEcommerce: 'CMS y E-commerce',
-    softSkills: 'Habilidades Blandas',
-    professionalExperience: 'Experiencia Profesional',
-    
-    // Projects
-    projectsTitle: 'Proyectos',
-    all: 'Todos',
-    Sunbeat: 'Sunbeat Energy',
-    SunbeatDesc: 'Página de destino para una empresa que vende servicios energéticos.',
-    Overall: 'Overall Contractors',
-    overallDesc: 'Creación de sitio web en WordPress para empresa constructora',
-    analyticsDashboard: 'Dashboard de Analytics',
-    dashboardDesc: 'Panel administrativo con gráficos interactivos e informes en tiempo real.',
-    caricoos: 'Sitio Corporativo',
-    caricoosDesc: 'Sitio web institucional responsivo con CMS personalizado.',
-    ecofit: 'Prototipo móvil de Ecofit',
-    ecofitDesc: 'Creación de prototipo con Figma para app de gimnasio',
-    coletafacil: 'Coleta Fácil',
-    coletafacilDesc: 'Proyecto UX, desarrollamos desde la investigación para entender al usuario hasta el prototipo navegable del proyecto que busca facilitar la forma en que las personas pueden llevar su basura a reciclar.',
-    bffdeli: 'Black Forest Food',
-    bffdeliDesc: 'Página para un restaurante en Colorado, la página hizo que el negocio fuera más atractivo y con eso más clientes comenzaron a realizar pedidos en línea.',
-    managementSystem: 'Sistema de Gestión',
-    managementDesc: 'Plataforma de gestión empresarial con múltiples módulos.',
-    likedWhat: '¿Te gustó lo que viste? ¡Trabajemos juntos!',
 
-    // Experiência Profissional (role e description traduzíveis)
-    // Experience Translations
-    exp1_role: 'Analista de Sistemas Frontend',
-    exp1_desc: 'Creación de piezas gráficas con herramientas de Adobe y mantenimiento de portales WordPress. Desarrollo de diseños con HTML, CSS, JavaScript, Angular y NextJS.',
-    exp2_role: 'Desarrollador WordPress Freelance',
-    exp2_desc: 'Creación y mantenimiento de portales WordPress y sitios de comercio electrónico.',
-    exp3_role: 'Desarrollador WordPress Freelance',
-    exp3_desc: 'Creación de sitios web y tiendas online utilizando WordPress, Elementor y WooCommerce.',
+    heroTitle: 'Luan Belon',
+    heroSubtitle: 'Ingeniero Frontend Pleno y Diseñador UX/UI',
+    heroDescription: 'Transformo requisitos de negocio y diseño en interfaces rápidas, accesibles y que convierten: sitios, tiendas y productos digitales.',
+    heroManifesto: 'Ayudo a las marcas a destacar en la era digital.',
+    heroLocation: 'Salvador, Brasil',
+    availability: 'Basado en Brasil · disponible para remoto y freelance',
+    heroDiscipline: 'Frontend · UX',
+    heroRoles: ['Diseñador UX/UI', 'Ingeniero Frontend', 'Desarrollador WordPress'],
+    viewWork: 'Ver trabajo',
+    viewProjects: 'Ver trabajo',
+    hireMe: 'Contratar',
+    getInTouch: 'Contacto',
+    siteTitle: 'Luan Belon — Ingeniero Frontend Pleno y Diseñador UX/UI',
+    siteDescription: 'Luan Belon — ingeniero frontend pleno y UX/UI basado en Brasil, disponible para remoto y freelance. Sitios, e-commerce y producto digital del Figma al código. 47 reseñas 5.0 en Freelancer.',
+    menu: 'Menú',
+    languageLabel: 'Idioma',
+    education: 'Formación',
+    eduMba: 'MBA en UX',
+    eduDegree: 'Sistemas para Internet',
+    eduCubos: 'Diseño UX/UI',
+    eduUdacity: 'Nanodegree de Marketing Digital',
+    research: 'Investigación',
+    roleFounder: 'Fundador',
+    roleCeo: 'CEO',
+    rolePm: 'Gerente de producto',
+    roleClient: 'Cliente',
+
+    aboutTitle: 'Sobre',
+    aboutLead: 'Ingeniero frontend pleno, con MBA en UX y ocho años en la web. Transformo diseño y requisitos de negocio en sitios, tiendas y productos — del Figma al código, con rendimiento, accesibilidad y plazo. Basado en Brasil, disponible para remoto y freelance.',
+    skillsTitle: 'Capacidades',
+    frontendDev: 'Frontend',
+    designUx: 'UX e interfaz',
+    cmsEcommerce: 'CMS y e-commerce',
+    professionalExperience: 'Trayectoria',
+    present: 'actual',
+    proofYears: 'años de carrera',
+    proofReviews: 'reseñas en Freelancer',
+    proofRating: 'nota media',
+    proofOnTime: 'entregas a tiempo',
+    proofMba: 'en UX',
+    exp1_role: 'Ingeniero Frontend Pleno',
+    exp1_desc: 'En Netra transformo requisitos de negocio y diseño en interfaces con Angular, TypeScript, JavaScript y WordPress. Foco en rendimiento, accesibilidad y código que el equipo puede mantener.',
+    exp2_role: 'Desarrollador front-end y UX (Freelance)',
+    exp2_desc: 'En Freelancer.com desde 2017: 47 reseñas 5.0. Sitios y e-commerces para clientes en EE. UU., México y Brasil. Figma a WordPress, WooCommerce, Elementor, SEO y optimización.',
+    exp3_role: 'Desarrollador WordPress',
+    exp3_desc: 'Sitios y tiendas con WordPress, Elementor y WooCommerce.',
     exp4_role: 'Desarrollador WordPress',
-    exp4_desc: 'Desarrollo de sitios web y tiendas virtuales. Creación de diseños responsivos con HTML, CSS, JavaScript, Angular y NextJS.',
+    exp4_desc: 'Sitios y layouts responsivos para clientes de la agencia, del visual al HTML, CSS y JavaScript.',
 
-    
-    // Testimonials
+    selectedWork: 'Trabajo seleccionado',
+    selectedWorkLead: 'Una muestra de sitios, cases y prototipos. El resto está en el índice.',
+    viewAllWork: 'Ver todo el trabajo',
+    workTitle: 'Trabajo',
+    workLead: 'Sitios, e-commerces y productos digitales — del Figma al código.',
+    all: 'Todos',
+    emptyWork: 'Todavía no hay trabajo en este filtro.',
+    backToWork: 'Volver al trabajo',
+    liveSite: 'Ver sitio',
+    openFigma: 'Abrir en Figma',
+    readOnMedium: 'Leer en Medium',
+    beforeLabel: 'Antes',
+    afterLabel: 'Después',
+    yearLabel: 'Año',
+    clientLabel: 'Cliente',
+    roleLabel: 'Rol',
+    galleryLabel: 'Galería',
+    prototypeLabel: 'Prototipo',
+
+    typeWebsite: 'Sitio',
+    typeBeforeAfter: 'Antes y después',
+    typeLayout: 'Layout',
+    typeCaseStudy: 'Case UX/UI',
+    typePrototype: 'Prototipo',
+    typeArticle: 'Artículo',
+
+    articlesTitle: 'Escritura',
+    articlesLead: 'Notas y artículos en Medium sobre producto, interfaz y frontend.',
+    recentWriting: 'Escritura reciente',
+    emptyArticles: 'Aún no hay artículos publicados.',
+
     testimonialsTitle: 'Testimonios',
     testimonial1: 'El excelente trabajo de Luan cumplió con mis expectativas; me encantó cómo lo diseñó y organizó. Seguiré trabajando contigo para mejorar constantemente mi sitio.',
-    testimonial2: 'Luan es una persona muy dedicada, paciente y trabajadora. Disfrutamos mucho trabajando con él y estamos muy satisfechos con los resultados de nuestros proyectos.',
-    testimonial3: '¡Luan es el mejor! Es un profesional muy talentoso, paciente y dedicado. El resultado final del sitio web que creó para nosotros es impresionante; cumplió con todos los requisitos e hizo los cambios necesarios. Lo contrataremos de nuevo en el futuro.',
-    testimonial4: '¡Me encantó trabajar con Luan y definitivamente volveré a contactarlo!',
+    testimonial2: 'Luan es una persona muy dedicada, paciente y trabajadora. Disfrutamos mucho trabajando con él y estamos muy satisfechos con los resultados.',
+    testimonial3: 'Luan es el mejor. Un profesional talentoso, paciente y dedicado. El sitio que creó para nosotros es impresionante; cumplió el brief e hizo los cambios necesarios. Lo contrataremos de nuevo.',
+    testimonial4: 'Me encantó trabajar con Luan y definitivamente volveré a contactarlo.',
+    testimonial5: 'Un profesional excelente. Entregó el sitio igual al layout de Figma, en la mitad del plazo, e hizo todos los cambios que pedimos.',
     previousTestimonial: 'Testimonio anterior',
     nextTestimonial: 'Siguiente testimonio',
     goToTestimonial: 'Ir al testimonio',
-    
-    // Contact
-    hireMeTitle: 'Contáctame',
-    workTogether: '¡Trabajemos juntos!',
-    contactDescription: 'Siempre estoy abierto a nuevos desafíos y oportunidades. Si tienes un proyecto en mente o solo quieres hablar sobre tecnología, ¡no dudes en contactarme!',
-    socialNetworks: 'Mis Redes Sociales',
-    sendMessage: 'Envía un Mensaje',
+
+    hireMeTitle: 'Contacto',
+    workTogether: 'Construyamos el próximo proyecto.',
+    contactDescription: 'Basado en Brasil, disponible para remoto y freelance. Sitios, e-commerce y producto digital — Figma a WordPress, o frontend en Angular y React.',
+    socialNetworks: 'Redes',
+    sendMessage: 'Mensaje',
     name: 'Nombre',
     email: 'Email',
     subject: 'Asunto',
     message: 'Mensaje',
     yourName: 'Tu nombre',
     yourEmail: 'tu@email.com',
-    messageSubject: 'Asunto del mensaje',
-    projectMessage: 'Cuéntame sobre tu proyecto...',
-    sendMessageBtn: 'Enviar Mensaje',
-    messageSent: '¡Mensaje enviado con éxito!',
-    messageError: 'Error al enviar mensaje. Inténtalo de nuevo.',
-    
-    // Footer
-    madeWith: 'Hecho con',
-    by: 'por',
+    messageSubject: 'Asunto',
+    projectMessage: 'Cuéntame sobre el proyecto…',
+    sendMessageBtn: 'Enviar',
+    sending: 'Enviando…',
+    messageSent: 'Mensaje enviado.',
+    messageError: 'No se pudo enviar. Inténtalo de nuevo.',
+
+    madeWith: 'Luan Belon',
+    by: '—',
     allRights: 'Todos los derechos reservados.',
-    frontendDeveloper: 'Desarrollador Frontend',
+    frontendDeveloper: 'Frontend',
     uxDesigner: 'Diseñador UX',
     systemsAnalyst: 'Analista de Sistemas',
-    
-    // Accessibility
+
     accessibility: 'Accesibilidad',
-    accessibilityControls: 'Controles de Accesibilidad',
-    fontSize: 'Tamaño de Fuente',
+    accessibilityControls: 'Controles de accesibilidad',
+    fontSize: 'Tamaño de fuente',
     increaseFontSize: 'Aumentar fuente',
     decreaseFontSize: 'Disminuir fuente',
-    highContrast: 'Alto Contraste',
+    highContrast: 'Alto contraste',
     toggleHighContrast: 'Alternar alto contraste',
     reset: 'Restablecer',
-    
-    // Toast messages
-    linkInDevelopment: '🚧 ¡Enlace en desarrollo!',
-    linkDescription: 'Este enlace aún no ha sido implementado—¡pero no te preocupes! ¡Puedes solicitarlo en tu próximo prompt! 🚀',
-    formInDevelopment: '🚧 ¡Formulario en desarrollo!',
-    formDescription: 'Esta funcionalidad aún no ha sido implementada—¡pero no te preocupes! ¡Puedes solicitarla en tu próximo prompt! 🚀',
-    featureInDevelopment: '🚧 ¡Funcionalidad en desarrollo!',
-    featureDescription: 'Esta funcionalidad aún no ha sido implementada—¡pero no te preocupes! ¡Puedes solicitarla en tu próximo prompt! 🚀'
-  }
+
+    linkInDevelopment: 'Enlace en desarrollo',
+    linkDescription: 'Este destino aún no está disponible.',
+    formInDevelopment: 'Formulario en desarrollo',
+    formDescription: 'Esta funcionalidad aún no ha sido implementada.',
+    featureInDevelopment: 'Funcionalidad en desarrollo',
+    featureDescription: 'Esta funcionalidad aún no ha sido implementada.',
+  },
+  de: {
+    home: 'Start',
+    work: 'Arbeit',
+    articles: 'Artikel',
+    resume: 'Lebenslauf',
+    downloadResume: 'PDF herunterladen',
+    resumeFileName: 'Luan-Belon-Lebenslauf',
+    contact: 'Kontakt',
+    skills: 'Über mich',
+    testimonials: 'Stimmen',
+
+    heroTitle: 'Luan Belon',
+    heroSubtitle: 'Frontend-Ingenieur und UX/UI Designer',
+    heroDescription: 'Ich übersetze Geschäftsanforderungen und Design in schnelle, barrierefreie Interfaces, die konvertieren: Websites, Shops und digitale Produkte.',
+    heroManifesto: 'Ich helfe Marken, sich im digitalen Zeitalter abzuheben.',
+    heroLocation: 'Salvador, Brasilien',
+    availability: 'Ansässig in Brasilien · verfügbar für Remote-Arbeit und Freelance',
+    heroDiscipline: 'Frontend · UX',
+    heroRoles: ['UX/UI Designer', 'Frontend-Ingenieur', 'WordPress-Entwickler'],
+    viewWork: 'Arbeit ansehen',
+    viewProjects: 'Arbeit ansehen',
+    hireMe: 'Beauftragen',
+    getInTouch: 'Kontakt',
+    siteTitle: 'Luan Belon — Frontend-Ingenieur und UX/UI Designer',
+    siteDescription: 'Luan Belon — Frontend-Ingenieur und UX/UI Designer, ansässig in Brasilien, verfügbar für Remote-Arbeit und Freelance. Websites, E-Commerce und digitale Produkte von Figma bis Code. 47 Freelancer-Bewertungen mit 5.0.',
+    menu: 'Menü',
+    languageLabel: 'Sprache',
+    education: 'Ausbildung',
+    eduMba: 'MBA in UX',
+    eduDegree: 'Internet-Systeme',
+    eduCubos: 'UX/UI Design',
+    eduUdacity: 'Nanodegree Digitales Marketing',
+    research: 'Recherche',
+    roleFounder: 'Gründer',
+    roleCeo: 'CEO',
+    rolePm: 'Product Manager',
+    roleClient: 'Kunde',
+
+    aboutTitle: 'Über mich',
+    aboutLead: 'Frontend-Ingenieur mit MBA in UX und acht Jahren Web. Ich verwandle Design und Geschäftsanforderungen in Websites, Shops und Produkte — von Figma bis Code, mit Performance, Barrierefreiheit und Termintreue. Ansässig in Brasilien, verfügbar für Remote-Arbeit und Freelance.',
+    skillsTitle: 'Kompetenzen',
+    frontendDev: 'Frontend',
+    designUx: 'UX und Interface',
+    cmsEcommerce: 'CMS und E-Commerce',
+    professionalExperience: 'Werdegang',
+    present: 'heute',
+    proofYears: 'Jahre Erfahrung',
+    proofReviews: 'Freelancer-Bewertungen',
+    proofRating: 'Durchschnittsnote',
+    proofOnTime: 'pünktliche Lieferung',
+    proofMba: 'in UX',
+    exp1_role: 'Frontend-Ingenieur',
+    exp1_desc: 'Bei Netra setze ich Geschäftsanforderungen und Design mit Angular, TypeScript, JavaScript und WordPress um. Fokus auf Performance, Barrierefreiheit und Code, den das Team halten kann.',
+    exp2_role: 'Front-end-Entwickler und UX (Freelance)',
+    exp2_desc: 'Seit 2017 auf Freelancer.com: 47 Bewertungen mit 5.0. Websites und Shops für Kunden in den USA, Mexiko und Brasilien. Figma zu WordPress, WooCommerce, Elementor, SEO und Optimierung.',
+    exp3_role: 'WordPress-Entwickler',
+    exp3_desc: 'Websites und Shops mit WordPress, Elementor und WooCommerce.',
+    exp4_role: 'WordPress-Entwickler',
+    exp4_desc: 'Responsive Sites und Layouts für Agenturkunden, vom Visual zum HTML, CSS und JavaScript.',
+
+    selectedWork: 'Ausgewählte Arbeit',
+    selectedWorkLead: 'Eine Auswahl an Sites, Cases und Prototypen. Der Rest steht im Index.',
+    viewAllWork: 'Alle Arbeiten',
+    workTitle: 'Arbeit',
+    workLead: 'Websites, Shops und digitale Produkte — von Figma bis Code.',
+    all: 'Alle',
+    emptyWork: 'In diesem Filter gibt es noch keine Arbeit.',
+    backToWork: 'Zurück zur Arbeit',
+    liveSite: 'Website ansehen',
+    openFigma: 'In Figma öffnen',
+    readOnMedium: 'Auf Medium lesen',
+    beforeLabel: 'Vorher',
+    afterLabel: 'Nachher',
+    yearLabel: 'Jahr',
+    clientLabel: 'Kunde',
+    roleLabel: 'Rolle',
+    galleryLabel: 'Galerie',
+    prototypeLabel: 'Prototyp',
+
+    typeWebsite: 'Website',
+    typeBeforeAfter: 'Vorher und nachher',
+    typeLayout: 'Layout',
+    typeCaseStudy: 'UX/UI Case',
+    typePrototype: 'Prototyp',
+    typeArticle: 'Artikel',
+
+    articlesTitle: 'Texte',
+    articlesLead: 'Notizen und Artikel auf Medium zu Produkt, Interface und Frontend.',
+    recentWriting: 'Aktuelle Texte',
+    emptyArticles: 'Noch keine Artikel veröffentlicht.',
+
+    testimonialsTitle: 'Stimmen',
+    testimonial1: 'Luans Arbeit hat meine Erwartungen erfüllt; ich fand Design und Struktur großartig. Ich werde weiter mit dir zusammenarbeiten, um meine Website zu verbessern.',
+    testimonial2: 'Luan ist engagiert, geduldig und fleißig. Die Zusammenarbeit hat uns Freude gemacht, und wir sind mit den Ergebnissen sehr zufrieden.',
+    testimonial3: 'Luan ist der Beste. Ein talentierter, geduldiger und engagierter Profi. Die Website, die er für uns gebaut hat, ist beeindruckend; er hat das Briefing eingehalten und Änderungen umgesetzt. Wir werden ihn wieder beauftragen.',
+    testimonial4: 'Die Zusammenarbeit mit Luan hat mir sehr gefallen; ich werde mich auf jeden Fall wieder melden.',
+    testimonial5: 'Ein ausgezeichneter Profi. Er hat die Website wie im Figma-Layout geliefert, in der Hälfte der Zeit, und alle gewünschten Änderungen gemacht.',
+    previousTestimonial: 'Vorheriges Testimonial',
+    nextTestimonial: 'Nächstes Testimonial',
+    goToTestimonial: 'Zum Testimonial',
+
+    hireMeTitle: 'Kontakt',
+    workTogether: 'Lassen Sie uns das nächste Projekt bauen.',
+    contactDescription: 'Ansässig in Brasilien, verfügbar für Remote-Arbeit und Freelance. Websites, E-Commerce und digitale Produkte — Figma zu WordPress oder Frontend in Angular und React.',
+    socialNetworks: 'Netzwerke',
+    sendMessage: 'Nachricht',
+    name: 'Name',
+    email: 'E-Mail',
+    subject: 'Betreff',
+    message: 'Nachricht',
+    yourName: 'Ihr Name',
+    yourEmail: 'you@email.com',
+    messageSubject: 'Betreff',
+    projectMessage: 'Erzählen Sie mir vom Projekt…',
+    sendMessageBtn: 'Senden',
+    sending: 'Wird gesendet…',
+    messageSent: 'Nachricht gesendet.',
+    messageError: 'Senden fehlgeschlagen. Bitte erneut versuchen.',
+
+    madeWith: 'Luan Belon',
+    by: '—',
+    allRights: 'Alle Rechte vorbehalten.',
+    frontendDeveloper: 'Frontend',
+    uxDesigner: 'UX Designer',
+    systemsAnalyst: 'Systemanalytiker',
+
+    accessibility: 'Barrierefreiheit',
+    accessibilityControls: 'Barrierefreiheits-Einstellungen',
+    fontSize: 'Schriftgröße',
+    increaseFontSize: 'Schrift vergrößern',
+    decreaseFontSize: 'Schrift verkleinern',
+    highContrast: 'Hoher Kontrast',
+    toggleHighContrast: 'Hohen Kontrast umschalten',
+    reset: 'Zurücksetzen',
+
+    linkInDevelopment: 'Link in Entwicklung',
+    linkDescription: 'Dieses Ziel ist noch nicht verfügbar.',
+    formInDevelopment: 'Formular in Entwicklung',
+    formDescription: 'Diese Funktion ist noch nicht umgesetzt.',
+    featureInDevelopment: 'Funktion in Entwicklung',
+    featureDescription: 'Diese Funktion ist noch nicht umgesetzt.',
+  },
 };
 
-// Função para detectar idioma baseado no IP (simulada)
+const SUPPORTED_LANGUAGES = ['pt', 'en', 'es', 'de'];
+
 const detectLanguageFromIP = async () => {
   try {
-    // Simulação de detecção por IP - em produção, você usaria um serviço real
     const response = await fetch('https://ipapi.co/json/');
     const data = await response.json();
-    
-    // Países que falam português
     const portugueseCountries = ['BR', 'PT', 'AO', 'MZ', 'CV', 'GW', 'ST', 'TL'];
-    // Países que falam espanhol
     const spanishCountries = ['ES', 'MX', 'AR', 'CO', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO', 'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ'];
-    
+    const germanCountries = ['DE', 'AT', 'CH', 'LI'];
+
     if (portugueseCountries.includes(data.country_code)) {
       return 'pt';
-    } else if (spanishCountries.includes(data.country_code)) {
+    }
+    if (spanishCountries.includes(data.country_code)) {
       return 'es';
     }
-    
+    if (germanCountries.includes(data.country_code)) {
+      return 'de';
+    }
     return 'en';
   } catch (error) {
-    // Fallback para português se não conseguir detectar
     return 'pt';
   }
 };
@@ -372,18 +612,16 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeLanguage = async () => {
-      // Primeiro verifica se há idioma salvo no localStorage
       const savedLanguage = localStorage.getItem('portfolio-language');
-      
-      if (savedLanguage && ['pt', 'en', 'es'].includes(savedLanguage)) {
+
+      if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage)) {
         setLanguage(savedLanguage);
       } else {
-        // Se não há idioma salvo, detecta pelo IP
         const detectedLanguage = await detectLanguageFromIP();
         setLanguage(detectedLanguage);
         localStorage.setItem('portfolio-language', detectedLanguage);
       }
-      
+
       setIsLoading(false);
     };
 
@@ -391,25 +629,16 @@ export const LanguageProvider = ({ children }) => {
   }, []);
 
   const changeLanguage = (newLanguage) => {
-    if (['pt', 'en', 'es'].includes(newLanguage)) {
+    if (SUPPORTED_LANGUAGES.includes(newLanguage)) {
       setLanguage(newLanguage);
       localStorage.setItem('portfolio-language', newLanguage);
     }
   };
 
-  const t = (key) => {
-    return translations[language]?.[key] || key;
-  };
-
-  const value = {
-    language,
-    changeLanguage,
-    t,
-    isLoading
-  };
+  const t = (key) => translations[language]?.[key] ?? translations.pt[key] ?? key;
 
   return (
-    <LanguageContext.Provider value={value}>
+    <LanguageContext.Provider value={{ language, changeLanguage, t, isLoading }}>
       {children}
     </LanguageContext.Provider>
   );

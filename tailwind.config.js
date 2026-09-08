@@ -16,7 +16,15 @@ module.exports = {
 			},
 		},
 		extend: {
+			fontFamily: {
+				display: ['Syne', 'sans-serif'],
+				serif: ['Syne', 'sans-serif'],
+				sans: ['Outfit', 'sans-serif'],
+			},
 			colors: {
+				ink: '#08080A',
+				paper: '#F4F4F5',
+				brass: '#F4F4F5',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -35,8 +43,8 @@ module.exports = {
 					foreground: 'hsl(var(--destructive-foreground))',
 				},
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))',
+					DEFAULT: '#73737A',
+					foreground: '#73737A',
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',

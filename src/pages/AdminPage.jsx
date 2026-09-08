@@ -11,23 +11,41 @@ import {
   updateProject,
   verifyAdminToken,
 } from '@/lib/api';
+import { WORK_TYPES } from '@/lib/workTypes';
 
-const categoryOptions = [
-  { value: 'frontend', label: 'Frontend' },
-  { value: 'wordpress', label: 'WordPress' },
-  { value: 'ux', label: 'UX/UI' },
-  { value: 'design', label: 'Design' },
-];
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 const initialForm = {
   title: '',
   description: '',
-  category: 'frontend',
+  excerpt: '',
+  body: '',
+  type: 'website',
   live: '',
   github: '',
+  figmaUrl: '',
+  mediumUrl: '',
   imageUrl: '',
+  beforeImageUrl: '',
+  afterImageUrl: '',
+  gallery: [],
+  featured: false,
+  published: true,
+  year: '',
+  client: '',
+  role: '',
+  sortOrder: 0,
   tagIds: [],
 };
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Falha ao ler arquivo de imagem'));
+    reader.readAsDataURL(file);
+  });
+}
 
 const AdminPage = () => {
   const [token, setToken] = useState('');
@@ -42,14 +60,28 @@ const AdminPage = () => {
   const [newTagName, setNewTagName] = useState('');
   const [isCreatingTag, setIsCreatingTag] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState(null);
+  const [query, setQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
 
   const selectedTagsText = useMemo(() => {
     const selected = tags.filter((tag) => formData.tagIds.includes(String(tag.id)));
     return selected.map((tag) => tag.name).join(', ');
   }, [formData.tagIds, tags]);
 
-  async function loadData() {
-    const [allTags, allProjects] = await Promise.all([fetchTags(token), fetchProjects('pt')]);
+  const visibleProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const matchesType = typeFilter === 'all' || project.type === typeFilter;
+      const haystack = `${project.title} ${project.excerpt || ''}`.toLowerCase();
+      const matchesQuery = haystack.includes(query.toLowerCase());
+      return matchesType && matchesQuery;
+    });
+  }, [projects, query, typeFilter]);
+
+  async function loadData(currentToken = token) {
+    const [allTags, allProjects] = await Promise.all([
+      fetchTags(currentToken),
+      fetchProjects('pt', { admin: true, token: currentToken }),
+    ]);
     setTags(allTags);
     setProjects(allProjects);
   }
@@ -73,43 +105,63 @@ const AdminPage = () => {
     if (!token) {
       return;
     }
-    loadData().catch(() => {
-      setFeedback('Nao foi possivel carregar os dados do admin.');
+    loadData(token).catch(() => {
+      setFeedback('Não foi possível carregar os dados do admin.');
     });
   }, [token]);
 
   function handleChange(event) {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   }
 
-  async function fileToDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error('Falha ao ler arquivo de imagem'));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function handleImageUpload(event) {
+  async function handleImageUpload(event, field) {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
-
-    if (file.size > 2 * 1024 * 1024) {
-      setFeedback('A imagem deve ter no maximo 2MB.');
+    if (file.size > MAX_IMAGE_BYTES) {
+      setFeedback('A imagem deve ter no máximo 2MB.');
       return;
     }
-
     try {
       const dataUrl = await fileToDataUrl(file);
-      setFormData((prev) => ({ ...prev, imageUrl: dataUrl }));
-      setFeedback('Imagem carregada com sucesso.');
+      setFormData((prev) => ({ ...prev, [field]: dataUrl }));
+      setFeedback('Imagem carregada.');
     } catch (error) {
       setFeedback(error.message);
     }
+  }
+
+  async function handleGalleryUpload(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) {
+      return;
+    }
+    try {
+      const urls = [];
+      for (const file of files) {
+        if (file.size > MAX_IMAGE_BYTES) {
+          setFeedback('Cada imagem da galeria deve ter no máximo 2MB.');
+          return;
+        }
+        urls.push(await fileToDataUrl(file));
+      }
+      setFormData((prev) => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
+      setFeedback('Galeria atualizada.');
+    } catch (error) {
+      setFeedback(error.message);
+    }
+  }
+
+  function removeGalleryItem(index) {
+    setFormData((prev) => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, itemIndex) => itemIndex !== index),
+    }));
   }
 
   async function handleCreateTag() {
@@ -117,7 +169,6 @@ const AdminPage = () => {
     if (!trimmed) {
       return;
     }
-
     setIsCreatingTag(true);
     setFeedback('');
     try {
@@ -146,20 +197,21 @@ const AdminPage = () => {
     event.preventDefault();
     setIsSaving(true);
     setFeedback('');
+    const payload = { ...formData, imageKey: null };
 
     try {
       if (editingProjectId) {
-        await updateProject({ id: editingProjectId, ...formData, imageKey: null }, token);
-        setFeedback('Projeto atualizado com sucesso.');
+        await updateProject({ id: editingProjectId, ...payload }, token);
+        setFeedback('Trabalho atualizado.');
       } else {
-        await createProject({ ...formData, imageKey: null }, token);
-        setFeedback('Projeto criado com sucesso. Traducoes serao geradas automaticamente.');
+        await createProject(payload, token);
+        setFeedback('Trabalho criado. Traduções serão geradas automaticamente.');
       }
       setFormData(initialForm);
       setEditingProjectId(null);
       await loadData();
     } catch (error) {
-      setFeedback(`Erro ao salvar projeto: ${error.message}`);
+      setFeedback(`Erro ao salvar: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -175,53 +227,64 @@ const AdminPage = () => {
     setFormData({
       title: project.title || '',
       description: project.description || '',
-      category: project.category || 'frontend',
+      excerpt: project.excerpt || '',
+      body: project.body || '',
+      type: project.type || 'website',
       live: project.live || '',
       github: project.github || '',
+      figmaUrl: project.figmaUrl || '',
+      mediumUrl: project.mediumUrl || '',
       imageUrl: project.imageUrl || '',
+      beforeImageUrl: project.beforeImageUrl || '',
+      afterImageUrl: project.afterImageUrl || '',
+      gallery: project.gallery || [],
+      featured: Boolean(project.featured),
+      published: project.published !== false,
+      year: project.year || '',
+      client: project.client || '',
+      role: project.role || '',
+      sortOrder: project.sortOrder || 0,
       tagIds: [...new Set(selectedTagIds)],
     });
-    setFeedback('Modo edicao ativo.');
+    setFeedback('Edição ativa.');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function handleDeleteProject(projectId) {
-    const confirmed = window.confirm('Tem certeza que deseja excluir este projeto?');
+    const confirmed = window.confirm('Excluir este trabalho?');
     if (!confirmed) {
       return;
     }
-
-    setFeedback('');
     try {
       await deleteProject(projectId, token);
       if (editingProjectId === projectId) {
         setEditingProjectId(null);
         setFormData(initialForm);
       }
-      setFeedback('Projeto excluido com sucesso.');
+      setFeedback('Trabalho excluído.');
       await loadData();
     } catch (error) {
-      setFeedback(`Erro ao excluir projeto: ${error.message}`);
+      setFeedback(`Erro ao excluir: ${error.message}`);
     }
   }
 
   function cancelEdit() {
     setEditingProjectId(null);
     setFormData(initialForm);
-    setFeedback('Edicao cancelada.');
+    setFeedback('Edição cancelada.');
   }
 
   async function handleLogin(event) {
     event.preventDefault();
     setIsAuthenticating(true);
     setAuthError('');
-
     try {
       const response = await adminLogin(credentials);
       setToken(response.token);
       localStorage.setItem('admin-token', response.token);
       setCredentials({ username: '', password: '' });
     } catch (error) {
-      setAuthError('Login invalido. Verifique usuario e senha.');
+      setAuthError('Login inválido.');
     } finally {
       setIsAuthenticating(false);
     }
@@ -234,122 +297,211 @@ const AdminPage = () => {
     localStorage.removeItem('admin-token');
   }
 
+  const type = formData.type;
+  const showLive = ['website', 'layout'].includes(type);
+  const showGithub = type === 'website';
+  const showFigma = ['prototype', 'case_study'].includes(type);
+  const showMedium = type === 'article';
+  const showBeforeAfter = type === 'before_after';
+  const showGallery = ['website', 'layout', 'case_study'].includes(type);
+  const showBody = ['case_study', 'article', 'layout'].includes(type);
+
   if (!token) {
     return (
-      <main className="min-h-screen bg-black text-white px-6 py-16">
+      <main className="min-h-screen bg-ink text-paper px-6 py-24">
         <Helmet>
-          <title>Area administrativa</title>
+          <title>Área administrativa</title>
           <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
         </Helmet>
-        <div className="container max-w-md mx-auto">
-          <section className="card">
-            <h1 className="text-3xl font-bold text-yellow-400 mb-2">Login Admin</h1>
-            <p className="text-gray-300 mb-6">Acesso restrito. Informe usuario e senha.</p>
-            <form className="space-y-4" onSubmit={handleLogin}>
-              <input
-                className="w-full px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg"
-                placeholder="Usuario"
-                value={credentials.username}
-                onChange={(event) =>
-                  setCredentials((prev) => ({ ...prev, username: event.target.value }))
-                }
-                required
-              />
-              <input
-                type="password"
-                className="w-full px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg"
-                placeholder="Senha"
-                value={credentials.password}
-                onChange={(event) =>
-                  setCredentials((prev) => ({ ...prev, password: event.target.value }))
-                }
-                required
-              />
-              <button type="submit" className="btn w-full" disabled={isAuthenticating}>
-                {isAuthenticating ? 'Entrando...' : 'Entrar'}
-              </button>
-            </form>
-            {authError && <p className="text-red-300 text-sm mt-4">{authError}</p>}
-            <div className="mt-6">
-              <Link className="text-yellow-400 hover:text-yellow-300 text-sm" to="/">
-                Voltar ao site
-              </Link>
-            </div>
-          </section>
+        <div className="container max-w-md">
+          <p className="text-sm text-muted mb-2">CMS</p>
+          <h1 className="font-display text-4xl tracking-tight mb-2">Acesso restrito</h1>
+          <p className="text-muted mb-8">Informe usuário e senha para gerenciar o conteúdo.</p>
+          <form className="space-y-4" onSubmit={handleLogin}>
+            <input
+              className="field"
+              placeholder="Usuário"
+              value={credentials.username}
+              onChange={(event) => setCredentials((prev) => ({ ...prev, username: event.target.value }))}
+              required
+            />
+            <input
+              type="password"
+              className="field"
+              placeholder="Senha"
+              value={credentials.password}
+              onChange={(event) => setCredentials((prev) => ({ ...prev, password: event.target.value }))}
+              required
+            />
+            <button type="submit" className="btn w-full" disabled={isAuthenticating}>
+              {isAuthenticating ? 'Entrando…' : 'Entrar'}
+            </button>
+          </form>
+          {authError && <p className="text-red-300 text-sm mt-4">{authError}</p>}
+          <Link className="inline-block mt-6 text-sm text-paper" to="/">
+            Voltar ao site
+          </Link>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white px-6 py-16">
+    <main className="min-h-screen bg-ink text-paper px-6 py-16">
       <Helmet>
-        <title>Area administrativa</title>
+        <title>Área administrativa</title>
         <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
       </Helmet>
-      <div className="container max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold text-yellow-400">Area Administrativa</h1>
+      <div className="container max-w-6xl space-y-10">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm text-muted mb-2">CMS</p>
+            <h1 className="font-display text-4xl tracking-tight">Conteúdo</h1>
+          </div>
           <div className="flex gap-3">
-            <button className="btn btn-outline" onClick={handleLogout}>
-              Sair
-            </button>
-            <Link className="btn btn-outline" to="/curriculo">
-              Ver Curriculo
-            </Link>
-            <Link className="btn btn-outline" to="/">
-              Voltar ao site
-            </Link>
+            <button className="btn btn-outline" onClick={handleLogout}>Sair</button>
+            <Link className="btn btn-outline" to="/">Ver site</Link>
           </div>
         </div>
 
         <section className="card">
-          <h2 className="text-2xl font-semibold mb-4">
-            {editingProjectId ? 'Editar projeto (PT-BR)' : 'Novo projeto (cadastro em PT-BR)'}
+          <h2 className="font-display text-2xl tracking-tight mb-6">
+            {editingProjectId ? 'Editar trabalho' : 'Novo trabalho'}
           </h2>
           <form className="grid md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
-            <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="title" value={formData.title} onChange={handleChange} placeholder="Titulo do projeto" required />
-            <select className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="category" value={formData.category} onChange={handleChange}>
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <textarea className="md:col-span-2 px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg min-h-28" name="description" value={formData.description} onChange={handleChange} placeholder="Descricao completa" required />
-            <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="live" value={formData.live} onChange={handleChange} placeholder="URL de demonstracao" />
-            <input className="px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg" name="github" value={formData.github} onChange={handleChange} placeholder="URL do GitHub (opcional)" />
-            <label className="md:col-span-2 px-4 py-3 bg-black/50 border border-yellow-400/30 rounded-lg text-gray-300 cursor-pointer">
-              <span className="block text-sm mb-2">Upload da imagem do projeto</span>
-              <input
-                type="file"
-                accept="image/*"
-                className="w-full text-sm text-gray-200 file:mr-4 file:rounded-full file:border-0 file:bg-yellow-400 file:px-4 file:py-2 file:text-black"
-                onChange={handleImageUpload}
-              />
-              {formData.imageUrl && (
-                <span className="block mt-2 text-xs text-green-300">Imagem pronta para envio.</span>
-              )}
+            <label className="block">
+              <span className="label">Título</span>
+              <input className="field" name="title" value={formData.title} onChange={handleChange} required />
             </label>
+            <label className="block">
+              <span className="label">Tipo</span>
+              <select className="field" name="type" value={formData.type} onChange={handleChange}>
+                {WORK_TYPES.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.value === 'website' ? 'Site'
+                      : option.value === 'before_after' ? 'Antes e depois'
+                      : option.value === 'layout' ? 'Layout'
+                      : option.value === 'case_study' ? 'Case UX/UI'
+                      : option.value === 'prototype' ? 'Protótipo'
+                      : 'Artigo'}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="md:col-span-2 block">
+              <span className="label">Resumo</span>
+              <textarea className="field min-h-20" name="excerpt" value={formData.excerpt} onChange={handleChange} />
+            </label>
+            <label className="md:col-span-2 block">
+              <span className="label">Descrição</span>
+              <textarea className="field min-h-28" name="description" value={formData.description} onChange={handleChange} required />
+            </label>
+            {showBody && (
+              <label className="md:col-span-2 block">
+                <span className="label">Texto longo / case</span>
+                <textarea className="field min-h-40" name="body" value={formData.body} onChange={handleChange} />
+              </label>
+            )}
+            {showLive && (
+              <label className="block">
+                <span className="label">URL do site</span>
+                <input className="field" name="live" value={formData.live} onChange={handleChange} />
+              </label>
+            )}
+            {showGithub && (
+              <label className="block">
+                <span className="label">GitHub</span>
+                <input className="field" name="github" value={formData.github} onChange={handleChange} />
+              </label>
+            )}
+            {showFigma && (
+              <label className="md:col-span-2 block">
+                <span className="label">URL do Figma</span>
+                <input className="field" name="figmaUrl" value={formData.figmaUrl} onChange={handleChange} />
+              </label>
+            )}
+            {showMedium && (
+              <label className="md:col-span-2 block">
+                <span className="label">URL do Medium</span>
+                <input className="field" name="mediumUrl" value={formData.mediumUrl} onChange={handleChange} />
+              </label>
+            )}
+            <label className="block">
+              <span className="label">Ano</span>
+              <input className="field" name="year" value={formData.year} onChange={handleChange} />
+            </label>
+            <label className="block">
+              <span className="label">Cliente</span>
+              <input className="field" name="client" value={formData.client} onChange={handleChange} />
+            </label>
+            <label className="block">
+              <span className="label">Papel</span>
+              <input className="field" name="role" value={formData.role} onChange={handleChange} />
+            </label>
+            <label className="block">
+              <span className="label">Ordem</span>
+              <input className="field" name="sortOrder" value={formData.sortOrder} onChange={handleChange} />
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} />
+              Destaque na home
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} />
+              Publicado
+            </label>
+
+            <label className="md:col-span-2 block text-sm text-muted">
+              <span className="label">Capa</span>
+              <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'imageUrl')} />
+              {formData.imageUrl && <span className="block mt-2 text-brass">Capa pronta.</span>}
+            </label>
+
+            {showBeforeAfter && (
+              <>
+                <label className="block text-sm text-muted">
+                  <span className="label">Imagem antes</span>
+                  <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'beforeImageUrl')} />
+                </label>
+                <label className="block text-sm text-muted">
+                  <span className="label">Imagem depois</span>
+                  <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'afterImageUrl')} />
+                </label>
+              </>
+            )}
+
+            {showGallery && (
+              <div className="md:col-span-2">
+                <span className="label">Galeria</span>
+                <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} />
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {formData.gallery.map((src, index) => (
+                    <button
+                      key={`${index}-${src.slice(0, 24)}`}
+                      type="button"
+                      onClick={() => removeGalleryItem(index)}
+                      className="relative"
+                      title="Remover"
+                    >
+                      <img src={src} alt="" className="w-20 h-14 object-cover border border-white/10" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="md:col-span-2">
               <div className="flex flex-wrap gap-2 mb-3">
                 <input
-                  className="flex-1 min-w-52 px-4 py-2 bg-black/50 border border-yellow-400/30 rounded-lg"
-                  placeholder="Nova tag (ex: NextJS)"
+                  className="field flex-1 min-w-52"
+                  placeholder="Nova tag"
                   value={newTagName}
                   onChange={(event) => setNewTagName(event.target.value)}
                 />
-                <button
-                  type="button"
-                  className="btn btn-outline"
-                  onClick={handleCreateTag}
-                  disabled={isCreatingTag}
-                >
-                  {isCreatingTag ? 'Adicionando...' : 'Adicionar tag'}
+                <button type="button" className="btn btn-outline" onClick={handleCreateTag} disabled={isCreatingTag}>
+                  {isCreatingTag ? 'Adicionando…' : 'Adicionar tag'}
                 </button>
               </div>
-              <p className="mb-2 text-sm text-gray-300">Tags existentes (clique para adicionar):</p>
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => {
                   const active = formData.tagIds.includes(String(tag.id));
@@ -358,10 +510,8 @@ const AdminPage = () => {
                       key={tag.id}
                       type="button"
                       onClick={() => toggleTag(String(tag.id))}
-                      className={`px-3 py-1 rounded-full border transition ${
-                        active
-                          ? 'bg-yellow-400 text-black border-yellow-400'
-                          : 'bg-transparent text-yellow-400 border-yellow-400/50'
+                      className={`px-3 py-1 text-sm border ${
+                        active ? 'border-brass text-brass' : 'border-white/15 text-muted'
                       }`}
                     >
                       {tag.name}
@@ -369,14 +519,12 @@ const AdminPage = () => {
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-400 mt-2">
-                Selecionadas: {selectedTagsText || 'nenhuma'}
-              </p>
+              <p className="text-xs text-muted mt-2">Selecionadas: {selectedTagsText || 'nenhuma'}</p>
             </div>
 
             <div className="md:col-span-2 flex gap-3">
-              <button disabled={isSaving} className="btn flex-1 disabled:opacity-60" type="submit">
-                {isSaving ? 'Salvando...' : editingProjectId ? 'Atualizar projeto' : 'Salvar projeto'}
+              <button disabled={isSaving} className="btn flex-1" type="submit">
+                {isSaving ? 'Salvando…' : editingProjectId ? 'Atualizar' : 'Salvar'}
               </button>
               {editingProjectId && (
                 <button type="button" className="btn btn-outline" onClick={cancelEdit}>
@@ -385,28 +533,43 @@ const AdminPage = () => {
               )}
             </div>
           </form>
-          {feedback && <p className="mt-3 text-sm text-gray-300">{feedback}</p>}
+          {feedback && <p className="mt-4 text-sm text-muted">{feedback}</p>}
         </section>
 
-        <section className="card">
-          <h2 className="text-2xl font-semibold mb-4">Projetos ja cadastrados</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {projects.map((project) => (
-              <div key={project.id} className="border border-yellow-400/20 rounded-lg p-4">
-                <p className="font-semibold text-yellow-400">{project.title}</p>
-                <p className="text-sm text-gray-300 mt-1">{project.description}</p>
-                <p className="text-xs text-gray-400 mt-2">Categoria: {project.category}</p>
-                <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-outline !py-2 !px-4 !text-sm"
-                    onClick={() => startEditProject(project)}
-                  >
+        <section>
+          <div className="flex flex-wrap gap-3 mb-6">
+            <input
+              className="field max-w-xs"
+              placeholder="Buscar"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            <select className="field max-w-[180px]" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+              <option value="all">Todos os tipos</option>
+              {WORK_TYPES.map((option) => (
+                <option key={option.value} value={option.value}>{option.value}</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-3">
+            {visibleProjects.map((project) => (
+              <div key={project.id} className="border border-white/10 p-4 flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs text-muted mb-1">{project.type}</p>
+                  <p className="font-display text-xl tracking-tight">{project.title}</p>
+                  <p className="text-sm text-muted mt-1 max-w-2xl">{project.excerpt || project.description}</p>
+                  <p className="text-xs text-muted mt-2">
+                    {project.published ? 'Publicado' : 'Rascunho'}
+                    {project.featured ? ' · Destaque' : ''}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" className="btn btn-outline !py-2 !px-4 !text-sm" onClick={() => startEditProject(project)}>
                     Editar
                   </button>
                   <button
                     type="button"
-                    className="btn btn-outline !py-2 !px-4 !text-sm border-red-400 text-red-300 hover:bg-red-500 hover:text-white"
+                    className="btn btn-outline !py-2 !px-4 !text-sm"
                     onClick={() => handleDeleteProject(project.id)}
                   >
                     Excluir

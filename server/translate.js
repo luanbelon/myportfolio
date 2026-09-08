@@ -4,6 +4,7 @@ const languageMap = {
   pt: 'pt',
   en: 'en',
   es: 'es',
+  de: 'de',
 };
 
 async function translateText(text, targetLanguage) {

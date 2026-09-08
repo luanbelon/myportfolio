@@ -1,7 +1,44 @@
-export async function fetchProjects(language = 'pt') {
-  const response = await fetch(`/api/projects?lang=${language}`);
+async function parseError(response, fallback) {
+  let message = fallback;
+  try {
+    const payload = await response.json();
+    if (payload?.error) {
+      message = payload.error;
+    }
+  } catch (error) {
+    // Keep default message when parsing fails
+  }
+  return message;
+}
+
+export async function fetchProjects(language = 'pt', options = {}) {
+  const params = new URLSearchParams({ lang: language });
+  if (options.type) {
+    params.set('type', options.type);
+  }
+  if (options.featured) {
+    params.set('featured', '1');
+  }
+  if (options.admin) {
+    params.set('admin', '1');
+  }
+
+  const response = await fetch(`/api/projects?${params.toString()}`, {
+    headers: options.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {},
+  });
   if (!response.ok) {
-    throw new Error('Could not load projects');
+    throw new Error(await parseError(response, 'Could not load projects'));
+  }
+  return response.json();
+}
+
+export async function fetchProjectBySlug(slug, language = 'pt') {
+  const params = new URLSearchParams({ lang: language, slug });
+  const response = await fetch(`/api/projects?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(await parseError(response, 'Could not load project'));
   }
   return response.json();
 }
@@ -15,16 +52,7 @@ export async function fetchTags(token) {
       : {},
   });
   if (!response.ok) {
-    let message = 'Could not load tags';
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error;
-      }
-    } catch (error) {
-      // Keep default message when parsing fails
-    }
-    throw new Error(message);
+    throw new Error(await parseError(response, 'Could not load tags'));
   }
   return response.json();
 }
@@ -40,16 +68,7 @@ export async function createTag(name, token) {
   });
 
   if (!response.ok) {
-    let message = 'Could not create tag';
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error;
-      }
-    } catch (error) {
-      // Keep default message when parsing fails
-    }
-    throw new Error(message);
+    throw new Error(await parseError(response, 'Could not create tag'));
   }
 
   return response.json();
@@ -66,16 +85,7 @@ export async function createProject(payload, token) {
   });
 
   if (!response.ok) {
-    let message = 'Could not create project';
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error;
-      }
-    } catch (error) {
-      // Keep default message when parsing fails
-    }
-    throw new Error(message);
+    throw new Error(await parseError(response, 'Could not create project'));
   }
 
   return response.json();
@@ -92,16 +102,7 @@ export async function updateProject(payload, token) {
   });
 
   if (!response.ok) {
-    let message = 'Could not update project';
-    try {
-      const body = await response.json();
-      if (body?.error) {
-        message = body.error;
-      }
-    } catch (error) {
-      // keep default message
-    }
-    throw new Error(message);
+    throw new Error(await parseError(response, 'Could not update project'));
   }
 
   return response.json();
@@ -116,16 +117,7 @@ export async function deleteProject(projectId, token) {
   });
 
   if (!response.ok) {
-    let message = 'Could not delete project';
-    try {
-      const body = await response.json();
-      if (body?.error) {
-        message = body.error;
-      }
-    } catch (error) {
-      // keep default message
-    }
-    throw new Error(message);
+    throw new Error(await parseError(response, 'Could not delete project'));
   }
 
   return response.json();
