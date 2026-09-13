@@ -12,6 +12,7 @@ const {
 const { ensureSchema } = require('../api/_lib/schema');
 const { ensureDefaultProjectsSeeded } = require('../api/_lib/seed-defaults');
 const { handleGet, handlePost, handlePut, handleDelete } = require('../api/_lib/projects');
+const { handleGeo } = require('../api/_lib/geo');
 const db = require('../api/_lib/db');
 
 const app = express();
@@ -86,6 +87,8 @@ app.post('/api/tags', requireAdminAuth, async (req, res) => {
     res.status(500).json({ error: 'Failed to create tag' });
   }
 });
+
+app.get('/api/geo', handleGeo);
 
 app.get('/api/projects', handleGet);
 app.post('/api/projects', handlePost);

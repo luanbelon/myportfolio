@@ -21,7 +21,6 @@ const DocumentHead = () => {
     <Helmet htmlAttributes={{ lang: htmlLang }}>
       <title>{t('siteTitle')}</title>
       <meta name="description" content={t('siteDescription')} />
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
     </Helmet>
   );
 };

@@ -581,65 +581,160 @@ const translations = {
   },
 };
 
-const SUPPORTED_LANGUAGES = ['pt', 'en', 'es', 'de'];
+export const SUPPORTED_LANGUAGES = ['pt', 'en', 'es', 'de'];
+export const DEFAULT_LANGUAGE = 'en';
 
-const detectLanguageFromIP = async () => {
-  try {
-    const response = await fetch('https://ipapi.co/json/');
-    const data = await response.json();
-    const portugueseCountries = ['BR', 'PT', 'AO', 'MZ', 'CV', 'GW', 'ST', 'TL'];
-    const spanishCountries = ['ES', 'MX', 'AR', 'CO', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO', 'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ'];
-    const germanCountries = ['DE', 'AT', 'CH', 'LI'];
+// Only an explicit choice made in the language toggle is persisted here.
+// Auto-detection is never written to this key, so a visitor is re-detected
+// on each visit until they pick a language themselves.
+const CHOICE_STORAGE_KEY = 'portfolio-language-choice';
+// Legacy key from the previous implementation, which also stored detection
+// results. It is removed so old visitors go through detection again.
+const LEGACY_STORAGE_KEY = 'portfolio-language';
+// Detection result is cached per browser session to avoid a lookup on every
+// page load.
+const DETECTED_SESSION_KEY = 'portfolio-detected-language';
 
-    if (portugueseCountries.includes(data.country_code)) {
-      return 'pt';
-    }
-    if (spanishCountries.includes(data.country_code)) {
-      return 'es';
-    }
-    if (germanCountries.includes(data.country_code)) {
-      return 'de';
-    }
-    return 'en';
-  } catch (error) {
-    return 'pt';
-  }
+const DETECTION_TIMEOUT_MS = 2500;
+const REQUEST_TIMEOUT_MS = 2000;
+
+const COUNTRY_LANGUAGES = {
+  pt: ['BR', 'PT', 'AO', 'MZ', 'CV', 'GW', 'ST', 'TL'],
+  es: [
+    'ES', 'MX', 'AR', 'CO', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO', 'DO',
+    'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ', 'PR',
+  ],
+  de: ['DE', 'AT', 'CH', 'LI'],
 };
 
+export function languageForCountry(countryCode) {
+  const code = String(countryCode || '').toUpperCase();
+  if (!code) {
+    return DEFAULT_LANGUAGE;
+  }
+  const match = Object.entries(COUNTRY_LANGUAGES).find(([, countries]) => countries.includes(code));
+  return match ? match[0] : DEFAULT_LANGUAGE;
+}
+
+async function fetchJsonWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+    return await response.json();
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+// Primary: our own edge/serverless endpoint, which reads the country header
+// injected by the hosting platform (no third-party call, no rate limits).
+// Fallback: ipapi.co, used in local development or if the primary fails.
+async function detectCountry() {
+  try {
+    const data = await fetchJsonWithTimeout('/api/geo', REQUEST_TIMEOUT_MS);
+    if (data?.country) {
+      return data.country;
+    }
+  } catch (error) {
+    // fall through to the public API
+  }
+
+  try {
+    const data = await fetchJsonWithTimeout('https://ipapi.co/json/', REQUEST_TIMEOUT_MS);
+    return data?.country_code || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function detectLanguage() {
+  const timeout = new Promise((resolve) => {
+    window.setTimeout(() => resolve(DEFAULT_LANGUAGE), DETECTION_TIMEOUT_MS);
+  });
+  const detection = detectCountry().then(languageForCountry);
+  return Promise.race([detection, timeout]);
+}
+
+function readStorage(storage, key) {
+  try {
+    return storage.getItem(key);
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeStorage(storage, key, value) {
+  try {
+    storage.setItem(key, value);
+  } catch (error) {
+    // Storage may be unavailable (private mode, disabled cookies). Ignore.
+  }
+}
+
+function removeStorage(storage, key) {
+  try {
+    storage.removeItem(key);
+  } catch (error) {
+    // ignore
+  }
+}
+
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('pt');
+  const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initializeLanguage = async () => {
-      const savedLanguage = localStorage.getItem('portfolio-language');
+    let cancelled = false;
 
-      if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage)) {
-        setLanguage(savedLanguage);
-      } else {
-        const detectedLanguage = await detectLanguageFromIP();
-        setLanguage(detectedLanguage);
-        localStorage.setItem('portfolio-language', detectedLanguage);
+    const initializeLanguage = async () => {
+      removeStorage(window.localStorage, LEGACY_STORAGE_KEY);
+
+      const chosen = readStorage(window.localStorage, CHOICE_STORAGE_KEY);
+      if (chosen && SUPPORTED_LANGUAGES.includes(chosen)) {
+        setLanguage(chosen);
+        setIsLoading(false);
+        return;
       }
 
+      const cached = readStorage(window.sessionStorage, DETECTED_SESSION_KEY);
+      if (cached && SUPPORTED_LANGUAGES.includes(cached)) {
+        setLanguage(cached);
+        setIsLoading(false);
+        return;
+      }
+
+      const detected = await detectLanguage();
+      if (cancelled) {
+        return;
+      }
+      setLanguage(detected);
+      writeStorage(window.sessionStorage, DETECTED_SESSION_KEY, detected);
       setIsLoading(false);
     };
 
     initializeLanguage();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const changeLanguage = (newLanguage) => {
     if (SUPPORTED_LANGUAGES.includes(newLanguage)) {
       setLanguage(newLanguage);
-      localStorage.setItem('portfolio-language', newLanguage);
+      writeStorage(window.localStorage, CHOICE_STORAGE_KEY, newLanguage);
     }
   };
 
-  const t = (key) => translations[language]?.[key] ?? translations.pt[key] ?? key;
+  const t = (key) => translations[language]?.[key] ?? translations[DEFAULT_LANGUAGE][key] ?? key;
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, t, isLoading }}>
-      {children}
+      {isLoading ? <div className="min-h-screen bg-ink" aria-busy="true" /> : children}
     </LanguageContext.Provider>
   );
 };

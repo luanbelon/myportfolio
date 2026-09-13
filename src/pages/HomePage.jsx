@@ -1,6 +1,7 @@
 import React from 'react';
 import SiteLayout from '@/components/SiteLayout';
 import Hero from '@/components/Hero';
+import SelectedWork from '@/components/SelectedWork';
 import About from '@/components/About';
 import Testimonials from '@/components/Testimonials';
 import RecentArticles from '@/components/RecentArticles';
@@ -10,6 +11,7 @@ const HomePage = () => {
   return (
     <SiteLayout>
       <Hero />
+      <SelectedWork />
       <About />
       <Testimonials />
       <RecentArticles />

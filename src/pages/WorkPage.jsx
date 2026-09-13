@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import SiteLayout from '@/components/SiteLayout';
-import WorkList from '@/components/WorkList';
+import WorkGrid from '@/components/WorkGrid';
 import { fetchProjects } from '@/lib/api';
 import { FALLBACK_PROJECTS } from '@/lib/fallbackProjects';
 import { WORK_TYPES } from '@/lib/workTypes';
@@ -30,10 +30,26 @@ const WorkPage = () => {
     };
   }, [language]);
 
-  const filters = useMemo(
-    () => [{ value: 'all', label: t('all') }, ...WORK_TYPES.filter((type) => type.value !== 'article')],
-    [t]
-  );
+  // Only offer filters for types that actually have projects.
+  const filters = useMemo(() => {
+    const present = new Set(projects.map((project) => project.type));
+    return [
+      { value: 'all', label: t('all'), count: projects.length },
+      ...WORK_TYPES
+        .filter((type) => type.value !== 'article' && present.has(type.value))
+        .map((type) => ({
+          value: type.value,
+          label: t(type.labelKey),
+          count: projects.filter((project) => project.type === type.value).length,
+        })),
+    ];
+  }, [projects, t]);
+
+  useEffect(() => {
+    if (!filters.some((filter) => filter.value === activeFilter)) {
+      setActiveFilter('all');
+    }
+  }, [filters, activeFilter]);
 
   const filtered = activeFilter === 'all'
     ? projects
@@ -44,29 +60,46 @@ const WorkPage = () => {
       <Helmet>
         <title>{t('workTitle')} — Luan Belon</title>
       </Helmet>
-      <section className="pt-28 md:pt-32 pb-24 md:pb-32">
+      <section className="pt-28 md:pt-36 pb-24 md:pb-32">
         <div className="container">
-          <div className="flex flex-wrap items-baseline justify-between gap-4 mb-8">
-            <h1 className="text-sm text-muted font-normal">{t('workTitle')}</h1>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {filters.map((filter) => (
-                <button
-                  type="button"
-                  key={filter.value}
-                  onClick={() => setActiveFilter(filter.value)}
-                  className={`text-sm ${
-                    activeFilter === filter.value ? 'text-paper' : 'text-muted hover:text-paper'
-                  }`}
-                >
-                  {filter.label || t(filter.labelKey)}
-                </button>
-              ))}
+          <header className="mb-12 md:mb-16">
+            <h1 className="section-title">{t('workTitle')}</h1>
+            <p className="section-lead">{t('workLead')}</p>
+
+            <div
+              className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/[0.08] pt-5"
+              role="tablist"
+              aria-label={t('workTitle')}
+            >
+              {filters.map((filter) => {
+                const isActive = activeFilter === filter.value;
+                return (
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    key={filter.value}
+                    onClick={() => setActiveFilter(filter.value)}
+                    className={`inline-flex items-baseline gap-1.5 text-sm transition-colors ${
+                      isActive ? 'text-paper' : 'text-muted hover:text-paper'
+                    }`}
+                  >
+                    <span className={isActive ? 'border-b border-paper pb-0.5' : 'border-b border-transparent pb-0.5'}>
+                      {filter.label}
+                    </span>
+                    <span className="text-[0.7rem] tabular-nums text-muted">{filter.count}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </header>
+
           {filtered.length === 0 ? (
             <p className="text-muted pt-8">{t('emptyWork')}</p>
           ) : (
-            <WorkList projects={filtered} />
+            <div key={activeFilter}>
+              <WorkGrid projects={filtered} editorial />
+            </div>
           )}
         </div>
       </section>
