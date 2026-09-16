@@ -106,9 +106,11 @@ const WorkDetailPage = () => {
                     {project.title}
                   </h1>
                 </div>
-                <p className="lg:col-span-4 text-muted lg:text-right lg:pb-2">
-                  {project.excerpt || project.description}
-                </p>
+                {project.excerpt && project.excerpt !== project.description && (
+                  <p className="lg:col-span-4 text-muted lg:text-right lg:pb-2">
+                    {project.excerpt}
+                  </p>
+                )}
               </header>
 
               <dl className="flex flex-wrap gap-x-10 gap-y-3 text-sm">
@@ -150,28 +152,36 @@ const WorkDetailPage = () => {
                 )}
               </div>
 
-              {project.type === 'before_after' && project.beforeImageUrl && project.afterImageUrl ? (
-                <BeforeAfterSlider
-                  beforeSrc={project.beforeImageUrl}
-                  afterSrc={project.afterImageUrl}
-                  alt={project.title}
-                />
-              ) : (
-                <img
-                  src={resolveProjectImage(project)}
-                  alt={project.title}
-                  className="w-full aspect-[16/9] object-cover rounded-2xl"
-                />
-              )}
+              {(() => {
+                const isBeforeAfter = project.type === 'before_after';
+                const beforeSrc = project.beforeImageUrl || (isBeforeAfter ? project.gallery?.[0] : null);
+                const afterSrc = project.afterImageUrl
+                  || (isBeforeAfter ? (project.gallery?.[1] || project.imageUrl) : null);
+                const canCompare = Boolean(beforeSrc && afterSrc && beforeSrc !== afterSrc);
 
-              {project.body && (
+                if (isBeforeAfter && canCompare) {
+                  return (
+                    <BeforeAfterSlider
+                      beforeSrc={beforeSrc}
+                      afterSrc={afterSrc}
+                      alt={project.title}
+                    />
+                  );
+                }
+
+                return (
+                  <img
+                    src={resolveProjectImage(project)}
+                    alt={project.title}
+                    className="w-full aspect-[16/9] object-cover object-top rounded-2xl"
+                  />
+                );
+              })()}
+
+              {(project.body || project.description) && (
                 <div className="text-zinc-300 leading-relaxed whitespace-pre-line max-w-2xl text-lg">
-                  {project.body}
+                  {project.body || project.description}
                 </div>
-              )}
-
-              {!project.body && project.description && project.type === 'case_study' && (
-                <p className="text-zinc-300 leading-relaxed max-w-2xl text-lg">{project.description}</p>
               )}
 
               {(project.type === 'website' || project.type === 'layout') && (

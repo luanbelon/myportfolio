@@ -460,12 +460,22 @@ const AdminPage = () => {
             {showBeforeAfter && (
               <>
                 <label className="block text-sm text-muted">
-                  <span className="label">Imagem antes</span>
+                  <span className="label">Imagem antes (obrigatória para o comparador)</span>
                   <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'beforeImageUrl')} />
+                  {formData.beforeImageUrl ? (
+                    <img src={formData.beforeImageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                  ) : (
+                    <span className="block mt-2 text-xs text-zinc-500">Ainda sem imagem do antes.</span>
+                  )}
                 </label>
                 <label className="block text-sm text-muted">
-                  <span className="label">Imagem depois</span>
+                  <span className="label">Imagem depois (obrigatória para o comparador)</span>
                   <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'afterImageUrl')} />
+                  {formData.afterImageUrl ? (
+                    <img src={formData.afterImageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                  ) : (
+                    <span className="block mt-2 text-xs text-zinc-500">Ainda sem imagem do depois.</span>
+                  )}
                 </label>
               </>
             )}
