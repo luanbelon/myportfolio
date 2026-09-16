@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageToggle from '@/components/LanguageToggle';
+import BrandLogo from '@/components/BrandLogo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CONTACT_SCROLL_KEY } from '@/components/ScrollManager';
 
@@ -50,9 +51,7 @@ const Header = () => {
       }`}
     >
       <nav className="w-full max-w-[1320px] mx-auto px-5 md:px-7 flex items-center justify-between">
-        <Link to="/" className="font-display text-[0.95rem] tracking-tight">
-          Luan Belon
-        </Link>
+        <BrandLogo />
 
         <div className="hidden md:flex items-center gap-9">
           {menuItems.map((item) => (
