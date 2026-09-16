@@ -19,3 +19,12 @@ module.exports = async function handler(req, res) {
 
   return res.status(405).json({ error: 'Method not allowed' });
 };
+
+// Allow larger JSON bodies for base64 project images (still capped by platform).
+module.exports.config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4.5mb',
+    },
+  },
+};

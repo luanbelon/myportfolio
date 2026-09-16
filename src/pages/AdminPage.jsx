@@ -12,8 +12,13 @@ import {
   verifyAdminToken,
 } from '@/lib/api';
 import { WORK_TYPES } from '@/lib/workTypes';
+import {
+  compressImageFile,
+  estimatePayloadKb,
+  prepareProjectImages,
+} from '@/lib/imageCompress';
 
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 const initialForm = {
   title: '',
@@ -39,12 +44,7 @@ const initialForm = {
 };
 
 function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Falha ao ler arquivo de imagem'));
-    reader.readAsDataURL(file);
-  });
+  return compressImageFile(file);
 }
 
 const AdminPage = () => {
@@ -119,33 +119,40 @@ const AdminPage = () => {
   }
 
   async function handleImageUpload(event, field) {
-    const file = event.target.files?.[0];
+    const input = event.target;
+    const file = input.files?.[0];
     if (!file) {
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      setFeedback('A imagem deve ter no máximo 2MB.');
+      setFeedback('A imagem deve ter no máximo 8MB (será comprimida automaticamente).');
+      input.value = '';
       return;
     }
     try {
+      setFeedback('Otimizando imagem…');
       const dataUrl = await fileToDataUrl(file);
       setFormData((prev) => ({ ...prev, [field]: dataUrl }));
-      setFeedback('Imagem carregada.');
+      setFeedback('Imagem carregada e otimizada.');
     } catch (error) {
       setFeedback(error.message);
+    } finally {
+      input.value = '';
     }
   }
 
   async function handleGalleryUpload(event) {
-    const files = Array.from(event.target.files || []);
+    const input = event.target;
+    const files = Array.from(input.files || []);
     if (!files.length) {
       return;
     }
     try {
+      setFeedback('Otimizando galeria…');
       const urls = [];
       for (const file of files) {
         if (file.size > MAX_IMAGE_BYTES) {
-          setFeedback('Cada imagem da galeria deve ter no máximo 2MB.');
+          setFeedback('Cada imagem da galeria deve ter no máximo 8MB.');
           return;
         }
         urls.push(await fileToDataUrl(file));
@@ -154,6 +161,8 @@ const AdminPage = () => {
       setFeedback('Galeria atualizada.');
     } catch (error) {
       setFeedback(error.message);
+    } finally {
+      input.value = '';
     }
   }
 
@@ -196,22 +205,47 @@ const AdminPage = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     setIsSaving(true);
-    setFeedback('');
-    const payload = { ...formData, imageKey: null };
+    setFeedback('Preparando imagens e salvando…');
 
     try {
+      const payload = await prepareProjectImages(formData);
+      const sizeKb = estimatePayloadKb({ id: editingProjectId, ...payload });
+      if (sizeKb > 4200) {
+        throw new Error(
+          `Payload muito grande (${sizeKb} KB). Reduza as imagens ou remova itens da galeria e tente de novo.`
+        );
+      }
+
       if (editingProjectId) {
         await updateProject({ id: editingProjectId, ...payload }, token);
-        setFeedback('Trabalho atualizado.');
+        const allProjects = await fetchProjects('pt', { admin: true, token });
+        setProjects(allProjects);
+        const updated = allProjects.find((project) => project.id === editingProjectId);
+        if (updated) {
+          startEditProject(updated);
+        } else {
+          setFormData({
+            ...payload,
+            year: payload.year || '',
+            client: payload.client || '',
+            role: payload.role || '',
+          });
+        }
+        setFeedback('Trabalho atualizado. Imagens antes/depois preservadas.');
       } else {
         await createProject(payload, token);
+        setFormData(initialForm);
+        setEditingProjectId(null);
+        await loadData();
         setFeedback('Trabalho criado. Traduções serão geradas automaticamente.');
       }
-      setFormData(initialForm);
-      setEditingProjectId(null);
-      await loadData();
     } catch (error) {
-      setFeedback(`Erro ao salvar: ${error.message}`);
+      const message = String(error.message || '');
+      if (/413|Payload Too Large|entity too large|body/i.test(message)) {
+        setFeedback('Erro ao salvar: imagens grandes demais para o servidor. Tente de novo — elas serão comprimidas automaticamente.');
+      } else {
+        setFeedback(`Erro ao salvar: ${message}`);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -454,7 +488,11 @@ const AdminPage = () => {
             <label className="md:col-span-2 block text-sm text-muted">
               <span className="label">Capa</span>
               <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'imageUrl')} />
-              {formData.imageUrl && <span className="block mt-2 text-brass">Capa pronta.</span>}
+              {formData.imageUrl ? (
+                <img src={formData.imageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+              ) : (
+                <span className="block mt-2 text-xs text-zinc-500">Ainda sem capa.</span>
+              )}
             </label>
 
             {showBeforeAfter && (
@@ -463,7 +501,16 @@ const AdminPage = () => {
                   <span className="label">Imagem antes (obrigatória para o comparador)</span>
                   <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'beforeImageUrl')} />
                   {formData.beforeImageUrl ? (
-                    <img src={formData.beforeImageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                    <div className="mt-3 space-y-2">
+                      <img src={formData.beforeImageUrl} alt="" className="w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                      <button
+                        type="button"
+                        className="text-xs text-muted hover:text-paper"
+                        onClick={() => setFormData((prev) => ({ ...prev, beforeImageUrl: '' }))}
+                      >
+                        Remover antes
+                      </button>
+                    </div>
                   ) : (
                     <span className="block mt-2 text-xs text-zinc-500">Ainda sem imagem do antes.</span>
                   )}
@@ -472,7 +519,16 @@ const AdminPage = () => {
                   <span className="label">Imagem depois (obrigatória para o comparador)</span>
                   <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'afterImageUrl')} />
                   {formData.afterImageUrl ? (
-                    <img src={formData.afterImageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                    <div className="mt-3 space-y-2">
+                      <img src={formData.afterImageUrl} alt="" className="w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
+                      <button
+                        type="button"
+                        className="text-xs text-muted hover:text-paper"
+                        onClick={() => setFormData((prev) => ({ ...prev, afterImageUrl: '' }))}
+                      >
+                        Remover depois
+                      </button>
+                    </div>
                   ) : (
                     <span className="block mt-2 text-xs text-zinc-500">Ainda sem imagem do depois.</span>
                   )}

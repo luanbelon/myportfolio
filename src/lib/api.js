@@ -85,6 +85,9 @@ export async function createProject(payload, token) {
   });
 
   if (!response.ok) {
+    if (response.status === 413) {
+      throw new Error('Payload Too Large');
+    }
     throw new Error(await parseError(response, 'Could not create project'));
   }
 
@@ -102,6 +105,9 @@ export async function updateProject(payload, token) {
   });
 
   if (!response.ok) {
+    if (response.status === 413) {
+      throw new Error('Payload Too Large');
+    }
     throw new Error(await parseError(response, 'Could not update project'));
   }
 
