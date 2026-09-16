@@ -60,10 +60,26 @@ const Hero = () => {
         </motion.h1>
 
         <motion.p
-          className="mt-8 md:mt-12 max-w-2xl text-xl md:text-2xl text-zinc-400 leading-relaxed"
+          className="mt-8 md:mt-10 max-w-3xl text-lg md:text-xl text-zinc-300 leading-relaxed"
+          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: easeOut, delay: 0.1 }}
+        >
+          {t('geoIntro')}
+        </motion.p>
+        <motion.p
+          className="mt-4 max-w-3xl text-base md:text-lg text-zinc-400 leading-relaxed"
           initial={reduceMotion ? false : { opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: easeOut, delay: 0.12 }}
+        >
+          {t('geoIntroExtended')}
+        </motion.p>
+        <motion.p
+          className="mt-6 md:mt-8 max-w-2xl text-xl md:text-2xl text-zinc-400 leading-relaxed"
+          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: easeOut, delay: 0.14 }}
         >
           {t('heroManifesto')}
         </motion.p>

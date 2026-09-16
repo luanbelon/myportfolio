@@ -4,6 +4,7 @@ import SeoHead from '@/components/SeoHead';
 import Hero from '@/components/Hero';
 import SelectedWork from '@/components/SelectedWork';
 import About from '@/components/About';
+import Expertise from '@/components/Expertise';
 import Testimonials from '@/components/Testimonials';
 import RecentArticles from '@/components/RecentArticles';
 import Contact from '@/components/Contact';
@@ -25,6 +26,7 @@ const HomePage = () => {
       <Hero />
       <SelectedWork />
       <About />
+      <Expertise />
       <Testimonials />
       <RecentArticles />
       <Contact />

@@ -60,6 +60,20 @@ const translations = {
     roleClient: 'Cliente',
 
     aboutTitle: 'Sobre',
+    geoIntro: 'Luan Belon é engenheiro frontend pleno e designer UX/UI, especializado em Angular, WordPress e interfaces web acessíveis.',
+    geoIntroExtended: 'Seu trabalho inclui sites institucionais, aplicações web, e-commerce, design de interface e produtos digitais para clientes no Brasil e no exterior.',
+    expertiseTitle: 'Expertise',
+    expertiseLead: 'Áreas em que Luan Belon atua como engenheiro frontend e designer UX/UI.',
+    expSkill1Title: 'Engenharia frontend',
+    expSkill1Desc: 'Desenvolvimento de interfaces com Angular, React, TypeScript e JavaScript, com foco em componentes reutilizáveis, performance e manutenção.',
+    expSkill2Title: 'Angular',
+    expSkill2Desc: 'Construção de aplicações escaláveis, integração com APIs e interfaces orientadas a requisitos de negócio.',
+    expSkill3Title: 'WordPress e e-commerce',
+    expSkill3Desc: 'Sites e lojas com WordPress, WooCommerce e Elementor, do layout ao código publicado.',
+    expSkill4Title: 'UX/UI Design',
+    expSkill4Desc: 'Pesquisa, wireframes, protótipos e design systems em Figma para produtos digitais claros e usáveis.',
+    expSkill5Title: 'Acessibilidade e SEO técnico',
+    expSkill5Desc: 'Interfaces acessíveis, HTML semântico, performance, dados estruturados e descoberta em busca tradicional e generativa.',
     aboutLead: 'Engenheiro frontend pleno, com MBA em UX e oito anos de web. Transformo design e requisitos de negócio em sites, lojas e produtos digitais — do Figma ao código, com performance, acessibilidade e prazo. Baseado no Brasil, disponível para remoto e freelance.',
     skillsTitle: 'Capacidades',
     frontendDev: 'Frontend',
@@ -212,6 +226,20 @@ const translations = {
     roleClient: 'Client',
 
     aboutTitle: 'About',
+    geoIntro: 'Luan Belon is a Frontend Engineer and UX/UI Designer specializing in Angular, WordPress and accessible web interfaces.',
+    geoIntroExtended: 'His work includes institutional websites, web applications, e-commerce, interface design and digital products for clients in Brazil and abroad.',
+    expertiseTitle: 'Expertise',
+    expertiseLead: 'Areas where Luan Belon works as a frontend engineer and UX/UI designer.',
+    expSkill1Title: 'Frontend engineering',
+    expSkill1Desc: 'Interface development with Angular, React, TypeScript and JavaScript, focused on reusable components, performance and maintainability.',
+    expSkill2Title: 'Angular',
+    expSkill2Desc: 'Building scalable applications, API-driven interfaces and business-oriented frontend solutions.',
+    expSkill3Title: 'WordPress and e-commerce',
+    expSkill3Desc: 'Websites and stores with WordPress, WooCommerce and Elementor, from layout to production code.',
+    expSkill4Title: 'UX/UI design',
+    expSkill4Desc: 'Research, wireframes, prototypes and design systems in Figma for clear, usable digital products.',
+    expSkill5Title: 'Accessibility and technical SEO',
+    expSkill5Desc: 'Accessible interfaces, semantic HTML, performance, structured data and discoverability for search and generative engines.',
     aboutLead: 'Mid-level frontend engineer with an MBA in UX and eight years on the web. I turn design and business requirements into sites, stores and products — from Figma to code, with performance, accessibility and on-time delivery. Based in Brazil, available for remote work and freelance.',
     skillsTitle: 'Capabilities',
     frontendDev: 'Frontend',
@@ -364,6 +392,20 @@ const translations = {
     roleClient: 'Cliente',
 
     aboutTitle: 'Sobre',
+    geoIntro: 'Luan Belon es ingeniero frontend pleno y diseñador UX/UI, especializado en Angular, WordPress e interfaces web accesibles.',
+    geoIntroExtended: 'Su trabajo incluye sitios institucionales, aplicaciones web, e-commerce, diseño de interfaz y productos digitales para clientes en Brasil y en el exterior.',
+    expertiseTitle: 'Expertise',
+    expertiseLead: 'Áreas en las que Luan Belon actúa como ingeniero frontend y diseñador UX/UI.',
+    expSkill1Title: 'Ingeniería frontend',
+    expSkill1Desc: 'Desarrollo de interfaces con Angular, React, TypeScript y JavaScript, con foco en componentes reutilizables, rendimiento y mantenimiento.',
+    expSkill2Title: 'Angular',
+    expSkill2Desc: 'Construcción de aplicaciones escalables, integración con APIs e interfaces orientadas al negocio.',
+    expSkill3Title: 'WordPress y e-commerce',
+    expSkill3Desc: 'Sitios y tiendas con WordPress, WooCommerce y Elementor, del layout al código en producción.',
+    expSkill4Title: 'Diseño UX/UI',
+    expSkill4Desc: 'Investigación, wireframes, prototipos y design systems en Figma para productos digitales claros y usables.',
+    expSkill5Title: 'Accesibilidad y SEO técnico',
+    expSkill5Desc: 'Interfaces accesibles, HTML semántico, rendimiento, datos estructurados y descubrimiento en búsqueda tradicional y generativa.',
     aboutLead: 'Ingeniero frontend pleno, con MBA en UX y ocho años en la web. Transformo diseño y requisitos de negocio en sitios, tiendas y productos — del Figma al código, con rendimiento, accesibilidad y plazo. Basado en Brasil, disponible para remoto y freelance.',
     skillsTitle: 'Capacidades',
     frontendDev: 'Frontend',
@@ -516,6 +558,20 @@ const translations = {
     roleClient: 'Kunde',
 
     aboutTitle: 'Über mich',
+    geoIntro: 'Luan Belon ist Frontend-Ingenieur und UX/UI Designer mit Schwerpunkt auf Angular, WordPress und barrierefreien Web-Interfaces.',
+    geoIntroExtended: 'Seine Arbeit umfasst Unternehmenswebsites, Webanwendungen, E-Commerce, Interface-Design und digitale Produkte für Kunden in Brasilien und international.',
+    expertiseTitle: 'Expertise',
+    expertiseLead: 'Bereiche, in denen Luan Belon als Frontend-Ingenieur und UX/UI Designer arbeitet.',
+    expSkill1Title: 'Frontend Engineering',
+    expSkill1Desc: 'Interface-Entwicklung mit Angular, React, TypeScript und JavaScript — wiederverwendbare Komponenten, Performance und Wartbarkeit.',
+    expSkill2Title: 'Angular',
+    expSkill2Desc: 'Skalierbare Anwendungen, API-Anbindung und business-orientierte Frontend-Lösungen.',
+    expSkill3Title: 'WordPress und E-Commerce',
+    expSkill3Desc: 'Websites und Shops mit WordPress, WooCommerce und Elementor — vom Layout bis zum produktiven Code.',
+    expSkill4Title: 'UX/UI Design',
+    expSkill4Desc: 'Research, Wireframes, Prototypen und Design Systems in Figma für klare, nutzbare digitale Produkte.',
+    expSkill5Title: 'Barrierefreiheit und technisches SEO',
+    expSkill5Desc: 'Barrierefreie Interfaces, semantisches HTML, Performance, Structured Data und Auffindbarkeit in Suche und generativen Systemen.',
     aboutLead: 'Frontend-Ingenieur mit MBA in UX und acht Jahren Web. Ich verwandle Design und Geschäftsanforderungen in Websites, Shops und Produkte — von Figma bis Code, mit Performance, Barrierefreiheit und Termintreue. Ansässig in Brasilien, verfügbar für Remote-Arbeit und Freelance.',
     skillsTitle: 'Kompetenzen',
     frontendDev: 'Frontend',
@@ -624,6 +680,10 @@ const translations = {
 export const SUPPORTED_LANGUAGES = ['pt', 'en', 'es', 'de'];
 export const DEFAULT_LANGUAGE = 'en';
 
+export function getTranslation(language, key) {
+  return translations[language]?.[key] ?? translations[DEFAULT_LANGUAGE][key] ?? key;
+}
+
 // Only an explicit choice made in the language toggle is persisted here.
 // Auto-detection is never written to this key, so a visitor is re-detected
 // on each visit until they pick a language themselves.
@@ -723,11 +783,17 @@ function removeStorage(storage, key) {
   }
 }
 
-export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
-  const [isLoading, setIsLoading] = useState(true);
+export const LanguageProvider = ({ children, initialLanguage = DEFAULT_LANGUAGE, ssr = false }) => {
+  const [language, setLanguage] = useState(
+    SUPPORTED_LANGUAGES.includes(initialLanguage) ? initialLanguage : DEFAULT_LANGUAGE,
+  );
+  const [isLoading, setIsLoading] = useState(!ssr);
 
   useEffect(() => {
+    if (ssr) {
+      return undefined;
+    }
+
     let cancelled = false;
 
     const initializeLanguage = async () => {
@@ -770,7 +836,7 @@ export const LanguageProvider = ({ children }) => {
     }
   };
 
-  const t = (key) => translations[language]?.[key] ?? translations[DEFAULT_LANGUAGE][key] ?? key;
+  const t = (key) => getTranslation(language, key);
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, t, isLoading }}>

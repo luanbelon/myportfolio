@@ -12,6 +12,7 @@ import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import FigmaEmbed from '@/components/FigmaEmbed';
 import ImageGallery from '@/components/ImageGallery';
 import { fetchProjectBySlug } from '@/lib/api';
+import { getStaticWorkProject } from '@/lib/staticWorkProjects';
 import { resolveProjectImage } from '@/lib/projectImages';
 import { getWorkTypeLabel } from '@/lib/workTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,14 +21,15 @@ import { easeOut } from '@/lib/motion';
 const WorkDetailPage = () => {
   const { slug } = useParams();
   const { t, language } = useLanguage();
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState(() => getStaticWorkProject(slug));
   const [error, setError] = useState('');
 
   useEffect(() => {
+    setProject(getStaticWorkProject(slug));
     let mounted = true;
     fetchProjectBySlug(slug, language)
       .then((data) => {
-        if (mounted) {
+        if (mounted && data) {
           setProject(data);
         }
       })

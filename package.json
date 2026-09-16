@@ -9,7 +9,7 @@
     "dev:api": "node server/index.js",
     "db:init": "node server/init-db.js",
     "db:seed": "node server/seed.js",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist/server && node scripts/prerender.mjs",
     "preview": "vite preview"
   },
   "keywords": [],
