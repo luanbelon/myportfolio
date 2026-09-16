@@ -35,58 +35,64 @@ const BeforeAfterSlider = ({ beforeSrc, afterSrc, alt = '' }) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div
+      ref={frameRef}
+      className="relative overflow-hidden rounded-2xl aspect-[16/10] bg-[#111113] touch-none cursor-ew-resize select-none"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      role="img"
+      aria-label={`${t('beforeLabel')} / ${t('afterLabel')} — ${alt}`}
+    >
+      <img
+        src={afterSrc}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
+      />
       <div
-        ref={frameRef}
-        className="relative overflow-hidden rounded-2xl aspect-[16/10] bg-[#111113] touch-none cursor-ew-resize select-none"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        role="img"
-        aria-label={`${t('beforeLabel')} / ${t('afterLabel')} — ${alt}`}
+        className="absolute inset-y-0 left-0 overflow-hidden pointer-events-none"
+        style={{ width: `${position}%` }}
       >
         <img
-          src={afterSrc}
+          src={beforeSrc}
           alt=""
           draggable={false}
-          className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
+          className="absolute left-0 top-0 h-full max-w-none object-cover object-top"
+          style={{ width: `${100 / (position / 100)}%` }}
         />
-        <div
-          className="absolute inset-y-0 left-0 overflow-hidden pointer-events-none"
-          style={{ width: `${position}%` }}
-        >
-          <img
-            src={beforeSrc}
-            alt=""
-            draggable={false}
-            className="absolute left-0 top-0 h-full max-w-none object-cover object-top"
-            style={{ width: `${100 / (position / 100)}%` }}
-          />
-        </div>
-        <div
-          className="absolute inset-y-0 z-10 -translate-x-1/2"
-          style={{ left: `${position}%` }}
-        >
-          <div className="h-full w-px bg-paper" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 rounded-full border border-paper/80 bg-ink/70 backdrop-blur flex items-center justify-center text-paper text-xs tracking-tight">
-            ↔
-          </div>
+      </div>
+
+      <span className="absolute left-4 top-4 z-20 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm pointer-events-none">
+        {t('beforeLabel')}
+      </span>
+      <span className="absolute right-4 top-4 z-20 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm pointer-events-none">
+        {t('afterLabel')}
+      </span>
+
+      <div
+        className="absolute inset-y-0 z-10 -translate-x-1/2 pointer-events-none"
+        style={{ left: `${position}%` }}
+      >
+        <div className="h-full w-0.5 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.15)]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#111] shadow-lg">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M6.5 4.5 2.5 9l4 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M11.5 4.5 15.5 9l-4 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
       </div>
-      <div className="flex items-center justify-between text-sm text-muted">
-        <span>{t('beforeLabel')}</span>
-        <input
-          type="range"
-          min="2"
-          max="98"
-          value={position}
-          onChange={(event) => setPosition(Number(event.target.value))}
-          className="flex-1 mx-4 accent-[#f4f4f5]"
-          aria-label={`${t('beforeLabel')} / ${t('afterLabel')}`}
-        />
-        <span>{t('afterLabel')}</span>
-      </div>
+
+      <input
+        type="range"
+        min="2"
+        max="98"
+        value={position}
+        onChange={(event) => setPosition(Number(event.target.value))}
+        className="sr-only"
+        aria-label={`${t('beforeLabel')} / ${t('afterLabel')}`}
+      />
     </div>
   );
 };

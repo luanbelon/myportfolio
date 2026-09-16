@@ -152,6 +152,12 @@ const WorkDetailPage = () => {
                 )}
               </div>
 
+              {(project.body || project.description) && (
+                <div className="text-zinc-300 leading-relaxed whitespace-pre-line max-w-2xl text-lg">
+                  {project.body || project.description}
+                </div>
+              )}
+
               {(() => {
                 const isBeforeAfter = project.type === 'before_after';
                 const beforeSrc = project.beforeImageUrl || (isBeforeAfter ? project.gallery?.[0] : null);
@@ -177,12 +183,6 @@ const WorkDetailPage = () => {
                   />
                 );
               })()}
-
-              {(project.body || project.description) && (
-                <div className="text-zinc-300 leading-relaxed whitespace-pre-line max-w-2xl text-lg">
-                  {project.body || project.description}
-                </div>
-              )}
 
               {(project.type === 'website' || project.type === 'layout') && (
                 <ImageGallery images={project.gallery} alt={project.title} />
