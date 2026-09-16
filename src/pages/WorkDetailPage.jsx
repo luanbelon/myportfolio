@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
+import React, { useEffect, useMemo, useState } from 'react';
+import SeoHead from '@/components/SeoHead';
+import { DEFAULT_OG_IMAGE } from '@/lib/site';
+import {
+  buildBreadcrumbSchema,
+  buildCreativeWorkSchema,
+} from '@/lib/structuredData';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SiteLayout from '@/components/SiteLayout';
@@ -36,11 +41,47 @@ const WorkDetailPage = () => {
     };
   }, [slug, language, t]);
 
+  const seo = useMemo(() => {
+    if (!project) {
+      const fallbackTitle = `${t('workTitle')} — Luan Belon`;
+      return {
+        title: fallbackTitle,
+        description: t('siteDescription'),
+        path: `/trabalho/${slug}`,
+        image: DEFAULT_OG_IMAGE,
+        jsonLd: [],
+      };
+    }
+
+    const title = `${project.title} — Luan Belon`;
+    const description = (project.excerpt || project.description || t('siteDescription')).trim();
+    const path = `/trabalho/${project.slug}`;
+    const image = project.imageUrl?.startsWith('http') ? project.imageUrl : DEFAULT_OG_IMAGE;
+
+    return {
+      title,
+      description,
+      path,
+      image,
+      jsonLd: [
+        buildCreativeWorkSchema(project, t),
+        buildBreadcrumbSchema([
+          { name: t('workTitle'), path: '/trabalho' },
+          { name: project.title, path },
+        ]),
+      ],
+    };
+  }, [project, slug, t]);
+
   return (
     <SiteLayout>
-      <Helmet>
-        <title>{project ? `${project.title} — Luan Belon` : t('workTitle')}</title>
-      </Helmet>
+      <SeoHead
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        image={seo.image}
+        jsonLd={seo.jsonLd}
+      />
       <article className="pt-32 pb-24">
         <div className="container">
           <Link to="/trabalho" className="text-sm text-muted hover:text-paper">

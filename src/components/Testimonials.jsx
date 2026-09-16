@@ -35,11 +35,12 @@ const Testimonials = () => {
               transition={{ duration: 0.35, ease: easeOut }}
             >
               <blockquote className="font-display text-[1.65rem] md:text-[2.15rem] leading-[1.25] tracking-[-0.03em] text-paper">
-                {current.testimonial}
+                <p>{current.testimonial}</p>
+                <footer className="mt-8 text-sm text-muted font-normal tracking-normal">
+                  {current.name} — {t(current.roleKey)},{' '}
+                  <cite className="not-italic">{current.company}</cite>
+                </footer>
               </blockquote>
-              <p className="mt-8 text-sm text-muted">
-                {current.name} — {t(current.roleKey)}, {current.company}
-              </p>
             </motion.div>
           </AnimatePresence>
           <div className="mt-8 flex gap-3 text-sm text-zinc-400">

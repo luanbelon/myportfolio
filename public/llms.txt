@@ -1,0 +1,24 @@
+# Luan Belon
+
+> Engenheiro frontend pleno e designer UX/UI baseado em Salvador, Brasil, com disponibilidade para trabalho remoto e projetos freelance.
+
+## Perfil
+- Nome: Luan Belon (Luan Santos)
+- Cargo: Engenheiro Frontend Pleno e UX/UI Designer
+- Local: Salvador, Bahia, Brasil
+- Disponibilidade: remoto e freelance
+- Experiência: 8+ anos em web; 47 avaliações 5.0 no Freelancer.com
+- Stack: Angular, React, TypeScript, JavaScript, WordPress, Figma, WooCommerce
+
+## Links oficiais
+- Site: https://www.luanbelondev.com/
+- Trabalho: https://www.luanbelondev.com/trabalho
+- Artigos: https://www.luanbelondev.com/artigos
+- Currículo: https://www.luanbelondev.com/curriculo
+- LinkedIn: https://www.linkedin.com/in/luansantos-dev/
+- GitHub: https://github.com/luanbelon
+- Freelancer: https://www.br.freelancer.com/u/belondesign
+- Email: luanbelon@gmail.com
+
+## Serviços
+Sites, e-commerce, produto digital, design de interface, Figma para WordPress ou frontend em Angular e React, performance e acessibilidade.

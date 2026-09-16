@@ -1,14 +1,15 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { Download } from 'lucide-react';
 import SiteLayout from '@/components/SiteLayout';
+import SeoHead from '@/components/SeoHead';
+import { buildWebPageSchema } from '@/lib/structuredData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import luanPhoto from '@/assets/imgs/luan.png';
 import Reveal from '@/components/Reveal';
 import { FREELANCER_URL, GITHUB_URL, LINKEDIN_URL } from '@/lib/links';
 
 const ResumePage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const jobs = [
     { company: 'Netra Tecnologia', period: `2022 — ${t('present')}`, roleKey: 'exp1_role', descKey: 'exp1_desc' },
@@ -26,13 +27,23 @@ const ResumePage = () => {
     }, 500);
   };
 
+  const pageTitle = `${t('resume')} — Luan Belon`;
+
   return (
     <SiteLayout>
-      <Helmet>
-        <title>{t('resume')} — Luan Belon</title>
-      </Helmet>
+      <SeoHead
+        title={pageTitle}
+        description={t('resumeMetaDescription')}
+        path="/curriculo"
+        jsonLd={[buildWebPageSchema({
+          name: pageTitle,
+          description: t('resumeMetaDescription'),
+          path: '/curriculo',
+          language,
+        })]}
+      />
 
-      <main className="pt-32 pb-24 print:hidden">
+      <div className="pt-32 pb-24 print:hidden">
         <div className="container max-w-3xl">
           <Reveal className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <div className="flex items-end gap-6 md:gap-8">
@@ -103,7 +114,7 @@ const ResumePage = () => {
             </ul>
           </section>
         </div>
-      </main>
+      </div>
 
       <div className="resume-sheet">
         <header className="resume-head">

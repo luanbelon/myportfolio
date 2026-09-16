@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import SiteLayout from '@/components/SiteLayout';
 import WorkGrid from '@/components/WorkGrid';
 import { fetchProjects } from '@/lib/api';
 import { FALLBACK_PROJECTS } from '@/lib/fallbackProjects';
 import { WORK_TYPES } from '@/lib/workTypes';
 import { useLanguage } from '@/contexts/LanguageContext';
+import SeoHead from '@/components/SeoHead';
+import { buildWebPageSchema } from '@/lib/structuredData';
 
 const WorkPage = () => {
   const { t, language } = useLanguage();
@@ -55,15 +56,26 @@ const WorkPage = () => {
     ? projects
     : projects.filter((project) => project.type === activeFilter);
 
+  const pageTitle = `${t('workTitle')} — Luan Belon`;
+  const pageDescription = `${t('workLead')} ${t('availability')}.`;
+
   return (
     <SiteLayout>
-      <Helmet>
-        <title>{t('workTitle')} — Luan Belon</title>
-      </Helmet>
-      <section className="pt-28 md:pt-36 pb-24 md:pb-32">
+      <SeoHead
+        title={pageTitle}
+        description={pageDescription}
+        path="/trabalho"
+        jsonLd={[buildWebPageSchema({
+          name: pageTitle,
+          description: pageDescription,
+          path: '/trabalho',
+          language,
+        })]}
+      />
+      <section className="pt-28 md:pt-36 pb-24 md:pb-32" aria-labelledby="work-page-title">
         <div className="container">
           <header className="mb-12 md:mb-16">
-            <h1 className="section-title">{t('workTitle')}</h1>
+            <h1 id="work-page-title" className="section-title">{t('workTitle')}</h1>
             <p className="section-lead">{t('workLead')}</p>
 
             <div

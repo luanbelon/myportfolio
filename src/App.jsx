@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AccessibilityProvider } from '@/contexts/AccessibilityContext';
@@ -11,26 +10,10 @@ import AdminPage from '@/pages/AdminPage';
 import WorkPage from '@/pages/WorkPage';
 import WorkDetailPage from '@/pages/WorkDetailPage';
 import ArticlesPage from '@/pages/ArticlesPage';
-import { useLanguage } from '@/contexts/LanguageContext';
-
-const DocumentHead = () => {
-  const { t, language } = useLanguage();
-  const htmlLang = language === 'pt' ? 'pt-BR' : language;
-
-  return (
-    <Helmet htmlAttributes={{ lang: htmlLang }}>
-      <title>{t('siteTitle')}</title>
-      <meta name="description" content={t('siteDescription')} />
-    </Helmet>
-  );
-};
-
 function App() {
   return (
     <LanguageProvider>
       <AccessibilityProvider>
-        <DocumentHead />
-        
         <BrowserRouter>
           <ScrollManager />
           <Routes>

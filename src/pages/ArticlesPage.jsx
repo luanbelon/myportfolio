@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import SiteLayout from '@/components/SiteLayout';
+import SeoHead from '@/components/SeoHead';
 import WorkList from '@/components/WorkList';
 import { fetchProjects } from '@/lib/api';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { buildWebPageSchema } from '@/lib/structuredData';
 
 const ArticlesPage = () => {
   const { t, language } = useLanguage();
@@ -34,14 +35,24 @@ const ArticlesPage = () => {
     };
   }, [language]);
 
+  const pageTitle = `${t('articlesTitle')} — Luan Belon`;
+
   return (
     <SiteLayout>
-      <Helmet>
-        <title>{t('articlesTitle')} — Luan Belon</title>
-      </Helmet>
-      <section className="pt-32 pb-24">
+      <SeoHead
+        title={pageTitle}
+        description={t('articlesLead')}
+        path="/artigos"
+        jsonLd={[buildWebPageSchema({
+          name: pageTitle,
+          description: t('articlesLead'),
+          path: '/artigos',
+          language,
+        })]}
+      />
+      <section className="pt-32 pb-24" aria-labelledby="articles-page-title">
         <div className="container">
-          <h1 className="section-title">{t('articlesTitle')}</h1>
+          <h1 id="articles-page-title" className="section-title">{t('articlesTitle')}</h1>
           <p className="section-lead mb-10">{t('articlesLead')}</p>
           {loading ? (
             <p className="text-muted">{t('articlesTitle')}…</p>

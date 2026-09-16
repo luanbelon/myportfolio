@@ -43,6 +43,31 @@ const About = () => {
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           <Reveal className="lg:col-span-5">
             <p className="section-lead">{t('aboutLead')}</p>
+            <aside className="mt-8 border-t border-white/[0.08] pt-8" aria-label={t('geoFactsTitle')}>
+              <h3 className="sr-only">{t('geoFactsTitle')}</h3>
+              <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                <div>
+                  <dt className="text-muted">{t('geoFactRole')}</dt>
+                  <dd className="text-paper mt-1">{t('heroSubtitle')}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">{t('geoFactLocation')}</dt>
+                  <dd className="text-paper mt-1">{t('heroLocation')}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">{t('geoFactAvailability')}</dt>
+                  <dd className="text-paper mt-1">{t('availability')}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">{t('geoFactExperience')}</dt>
+                  <dd className="text-paper mt-1">{t('geoFactExperienceValue')}</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-muted">{t('geoFactServices')}</dt>
+                  <dd className="text-paper mt-1">{t('geoFactServicesValue')}</dd>
+                </div>
+              </dl>
+            </aside>
             <div className="space-y-6 mt-10">
               {skillCategories.map((category) => (
                 <div key={category.title}>
