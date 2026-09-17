@@ -1,11 +1,49 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+function readImageSize(src) {
+  return new Promise((resolve) => {
+    if (!src) {
+      resolve(null);
+      return;
+    }
+    const image = new Image();
+    image.onload = () => {
+      resolve({
+        width: image.naturalWidth || 1,
+        height: image.naturalHeight || 1,
+      });
+    };
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
 
 const BeforeAfterSlider = ({ beforeSrc, afterSrc, alt = '' }) => {
   const { t } = useLanguage();
   const [position, setPosition] = useState(50);
+  const [aspectRatio, setAspectRatio] = useState(16 / 10);
   const frameRef = useRef(null);
   const dragging = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([readImageSize(beforeSrc), readImageSize(afterSrc)]).then(([before, after]) => {
+      if (cancelled) return;
+      const ratios = [before, after]
+        .filter(Boolean)
+        .map((size) => size.height / size.width);
+      if (!ratios.length) return;
+      // Frame height matches the taller image when both are scaled to the same width.
+      const tallestRatio = Math.max(...ratios);
+      setAspectRatio(1 / tallestRatio);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [beforeSrc, afterSrc]);
 
   const updateFromClientX = useCallback((clientX) => {
     const frame = frameRef.current;
@@ -37,7 +75,8 @@ const BeforeAfterSlider = ({ beforeSrc, afterSrc, alt = '' }) => {
   return (
     <div
       ref={frameRef}
-      className="relative overflow-hidden rounded-2xl aspect-[16/10] bg-[#111113] touch-none cursor-ew-resize select-none"
+      className="relative w-full overflow-hidden rounded-2xl bg-[#111113] touch-none cursor-ew-resize select-none"
+      style={{ aspectRatio }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
