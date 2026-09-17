@@ -10,77 +10,71 @@ const SiteScrollPreview = ({ project, alt = '' }) => {
   const canScroll = Boolean(fullSrc);
 
   const frameRef = useRef(null);
-  const imageRef = useRef(null);
-  const [hovering, setHovering] = useState(false);
-  const [pinned, setPinned] = useState(false);
-  const [travel, setTravel] = useState(0);
+  const [showHint, setShowHint] = useState(canScroll);
+  const dragging = useRef(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const measure = () => {
-      const frame = frameRef.current;
-      const image = imageRef.current;
-      if (!frame || !image) return;
-      setTravel(Math.max(0, image.offsetHeight - frame.clientHeight));
-    };
+    setShowHint(canScroll);
+  }, [canScroll, scrollSrc]);
 
-    measure();
-    const image = imageRef.current;
-    if (image?.complete) {
-      measure();
-    } else {
-      image?.addEventListener('load', measure);
+  const hideHint = () => {
+    if (showHint) {
+      setShowHint(false);
     }
-    window.addEventListener('resize', measure);
-    return () => {
-      image?.removeEventListener('load', measure);
-      window.removeEventListener('resize', measure);
-    };
-  }, [scrollSrc]);
+  };
 
-  const active = canScroll && (hovering || pinned);
-  const duration = Math.min(14, Math.max(4, travel / 160));
+  const onPointerDown = (event) => {
+    if (!canScroll) return;
+    // Ignore primary button only for mouse; allow touch.
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    dragging.current = true;
+    lastY.current = event.clientY;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const onPointerMove = (event) => {
+    if (!canScroll || !dragging.current || !frameRef.current) return;
+    const delta = event.clientY - lastY.current;
+    lastY.current = event.clientY;
+    frameRef.current.scrollTop -= delta;
+    hideHint();
+  };
+
+  const onPointerUp = () => {
+    dragging.current = false;
+  };
 
   return (
-    <div className="space-y-3">
+    <div className="relative">
       <div
         ref={frameRef}
-        className="relative overflow-hidden rounded-2xl aspect-[16/10] bg-[#111113] group"
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-        onClick={() => {
-          if (canScroll) {
-            setPinned((value) => !value);
-          }
-        }}
-        role={canScroll ? 'button' : undefined}
-        tabIndex={canScroll ? 0 : undefined}
-        onKeyDown={(event) => {
-          if (!canScroll) return;
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setPinned((value) => !value);
-          }
-        }}
+        className={`overflow-x-hidden overflow-y-auto rounded-2xl aspect-[16/10] bg-[#111113] overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(244,244,245,0.4)_transparent] ${
+          canScroll ? 'cursor-grab active:cursor-grabbing' : ''
+        }`}
+        onWheel={hideHint}
+        onScroll={hideHint}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        role={canScroll ? 'region' : undefined}
         aria-label={canScroll ? t('scrollPageHint') : alt}
+        tabIndex={canScroll ? 0 : undefined}
       >
         <img
-          ref={imageRef}
           src={scrollSrc}
           alt={alt}
           draggable={false}
-          className="w-full h-auto max-w-none block will-change-transform"
-          style={{
-            transform: active ? `translate3d(0, -${travel}px, 0)` : 'translate3d(0, 0, 0)',
-            transition: `transform ${active ? duration : 1.15}s cubic-bezier(0.22, 1, 0.36, 1)`,
-          }}
+          className="w-full h-auto max-w-none block pointer-events-none select-none"
         />
-
-        {canScroll && !active && (
-          <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none">
-            {t('scrollPageHint')}
-          </span>
-        )}
       </div>
+
+      {canScroll && showHint && (
+        <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none">
+          {t('scrollPageHint')}
+        </span>
+      )}
     </div>
   );
 };

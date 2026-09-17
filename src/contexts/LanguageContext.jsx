@@ -113,7 +113,7 @@ const translations = {
     roleLabel: 'Papel',
     galleryLabel: 'Galeria',
     prototypeLabel: 'Protótipo',
-    scrollPageHint: 'Passe o mouse para ver a página completa',
+    scrollPageHint: 'Role ou arraste para ver a página completa',
 
     typeWebsite: 'Site',
     typeBeforeAfter: 'Antes e depois',
@@ -280,7 +280,7 @@ const translations = {
     roleLabel: 'Role',
     galleryLabel: 'Gallery',
     prototypeLabel: 'Prototype',
-    scrollPageHint: 'Hover to see the full page',
+    scrollPageHint: 'Scroll or drag to see the full page',
 
     typeWebsite: 'Website',
     typeBeforeAfter: 'Before & after',
@@ -447,7 +447,7 @@ const translations = {
     roleLabel: 'Rol',
     galleryLabel: 'Galería',
     prototypeLabel: 'Prototipo',
-    scrollPageHint: 'Pasa el mouse para ver la página completa',
+    scrollPageHint: 'Desplaza o arrastra para ver la página completa',
 
     typeWebsite: 'Sitio',
     typeBeforeAfter: 'Antes y después',
@@ -614,7 +614,7 @@ const translations = {
     roleLabel: 'Rolle',
     galleryLabel: 'Galerie',
     prototypeLabel: 'Prototyp',
-    scrollPageHint: 'Mit der Maus überfahren, um die ganze Seite zu sehen',
+    scrollPageHint: 'Scrollen oder ziehen, um die ganze Seite zu sehen',
 
     typeWebsite: 'Website',
     typeBeforeAfter: 'Vorher und nachher',

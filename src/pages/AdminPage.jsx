@@ -522,7 +522,7 @@ const AdminPage = () => {
                   </div>
                 ) : (
                   <span className="block mt-2 text-xs text-zinc-500">
-                    Envie um print longo da home. No detalhe do projeto, o hover faz o scroll suave.
+                    Envie um print longo da home. No detalhe do projeto, o visitante rola ou arrasta para ver a página inteira.
                   </span>
                 )}
               </label>
