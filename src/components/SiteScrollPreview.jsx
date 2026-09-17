@@ -10,71 +10,65 @@ const SiteScrollPreview = ({ project, alt = '' }) => {
   const canScroll = Boolean(fullSrc);
 
   const frameRef = useRef(null);
-  const [showHint, setShowHint] = useState(canScroll);
-  const dragging = useRef(false);
-  const lastY = useRef(0);
+  const imageRef = useRef(null);
+  const [hovering, setHovering] = useState(false);
+  const [travel, setTravel] = useState(0);
 
   useEffect(() => {
-    setShowHint(canScroll);
-  }, [canScroll, scrollSrc]);
+    const measure = () => {
+      const frame = frameRef.current;
+      const image = imageRef.current;
+      if (!frame || !image) return;
+      setTravel(Math.max(0, image.offsetHeight - frame.clientHeight));
+    };
 
-  const hideHint = () => {
-    if (showHint) {
-      setShowHint(false);
+    measure();
+    const image = imageRef.current;
+    if (image?.complete) {
+      measure();
+    } else {
+      image?.addEventListener('load', measure);
     }
-  };
+    window.addEventListener('resize', measure);
+    return () => {
+      image?.removeEventListener('load', measure);
+      window.removeEventListener('resize', measure);
+    };
+  }, [scrollSrc]);
 
-  const onPointerDown = (event) => {
-    if (!canScroll) return;
-    // Ignore primary button only for mouse; allow touch.
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    dragging.current = true;
-    lastY.current = event.clientY;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-
-  const onPointerMove = (event) => {
-    if (!canScroll || !dragging.current || !frameRef.current) return;
-    const delta = event.clientY - lastY.current;
-    lastY.current = event.clientY;
-    frameRef.current.scrollTop -= delta;
-    hideHint();
-  };
-
-  const onPointerUp = () => {
-    dragging.current = false;
-  };
+  // Slower pace: ~90px per second, clamped between 6s and 18s.
+  const duration = Math.min(18, Math.max(6, travel / 90));
 
   return (
     <div className="relative">
       <div
         ref={frameRef}
-        className={`overflow-x-hidden overflow-y-auto rounded-2xl aspect-[16/10] bg-[#111113] overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(244,244,245,0.4)_transparent] ${
-          canScroll ? 'cursor-grab active:cursor-grabbing' : ''
-        }`}
-        onWheel={hideHint}
-        onScroll={hideHint}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        role={canScroll ? 'region' : undefined}
+        className="relative overflow-hidden rounded-2xl aspect-[16/10] bg-[#111113]"
+        onMouseEnter={() => canScroll && setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+        role={canScroll ? 'img' : undefined}
         aria-label={canScroll ? t('scrollPageHint') : alt}
-        tabIndex={canScroll ? 0 : undefined}
       >
         <img
+          ref={imageRef}
           src={scrollSrc}
           alt={alt}
           draggable={false}
-          className="w-full h-auto max-w-none block pointer-events-none select-none"
+          className="w-full h-auto max-w-none block will-change-transform"
+          style={{
+            transform: hovering && canScroll
+              ? `translate3d(0, -${travel}px, 0)`
+              : 'translate3d(0, 0, 0)',
+            transition: `transform ${hovering ? duration : 1.4}s cubic-bezier(0.33, 0, 0.2, 1)`,
+          }}
         />
-      </div>
 
-      {canScroll && showHint && (
-        <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none">
-          {t('scrollPageHint')}
-        </span>
-      )}
+        {canScroll && !hovering && (
+          <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none">
+            {t('scrollPageHint')}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
