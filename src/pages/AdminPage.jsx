@@ -33,6 +33,7 @@ const initialForm = {
   imageUrl: '',
   beforeImageUrl: '',
   afterImageUrl: '',
+  fullPageImageUrl: '',
   gallery: [],
   featured: false,
   published: true,
@@ -131,7 +132,10 @@ const AdminPage = () => {
     }
     try {
       setFeedback('Otimizando imagem…');
-      const dataUrl = await fileToDataUrl(file);
+      const options = field === 'fullPageImageUrl'
+        ? { maxWidth: 1200, maxChars: 1_100_000 }
+        : undefined;
+      const dataUrl = await compressImageFile(file, options);
       setFormData((prev) => ({ ...prev, [field]: dataUrl }));
       setFeedback('Imagem carregada e otimizada.');
     } catch (error) {
@@ -271,6 +275,7 @@ const AdminPage = () => {
       imageUrl: project.imageUrl || '',
       beforeImageUrl: project.beforeImageUrl || '',
       afterImageUrl: project.afterImageUrl || '',
+      fullPageImageUrl: project.fullPageImageUrl || '',
       gallery: project.gallery || [],
       featured: Boolean(project.featured),
       published: project.published !== false,
@@ -337,6 +342,7 @@ const AdminPage = () => {
   const showFigma = ['prototype', 'case_study'].includes(type);
   const showMedium = type === 'article';
   const showBeforeAfter = type === 'before_after';
+  const showFullPage = type === 'website';
   const showGallery = ['website', 'layout', 'case_study'].includes(type);
   const showBody = ['case_study', 'article', 'layout'].includes(type);
 
@@ -486,7 +492,7 @@ const AdminPage = () => {
             </label>
 
             <label className="md:col-span-2 block text-sm text-muted">
-              <span className="label">Capa</span>
+              <span className="label">Capa (cards e preview)</span>
               <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'imageUrl')} />
               {formData.imageUrl ? (
                 <img src={formData.imageUrl} alt="" className="mt-3 w-full max-w-xs aspect-video object-cover object-top rounded-lg border border-white/10" />
@@ -494,6 +500,33 @@ const AdminPage = () => {
                 <span className="block mt-2 text-xs text-zinc-500">Ainda sem capa.</span>
               )}
             </label>
+
+            {showFullPage && (
+              <label className="md:col-span-2 block text-sm text-muted">
+                <span className="label">Home completa (scroll no hover da página do projeto)</span>
+                <input type="file" accept="image/*" onChange={(event) => handleImageUpload(event, 'fullPageImageUrl')} />
+                {formData.fullPageImageUrl ? (
+                  <div className="mt-3 space-y-2">
+                    <img
+                      src={formData.fullPageImageUrl}
+                      alt=""
+                      className="w-full max-w-xs max-h-64 object-cover object-top rounded-lg border border-white/10"
+                    />
+                    <button
+                      type="button"
+                      className="text-xs text-muted hover:text-paper"
+                      onClick={() => setFormData((prev) => ({ ...prev, fullPageImageUrl: '' }))}
+                    >
+                      Remover home completa
+                    </button>
+                  </div>
+                ) : (
+                  <span className="block mt-2 text-xs text-zinc-500">
+                    Envie um print longo da home. No detalhe do projeto, o hover faz o scroll suave.
+                  </span>
+                )}
+              </label>
+            )}
 
             {showBeforeAfter && (
               <>

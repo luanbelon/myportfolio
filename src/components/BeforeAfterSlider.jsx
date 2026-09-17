@@ -103,10 +103,10 @@ const BeforeAfterSlider = ({ beforeSrc, afterSrc, alt = '' }) => {
         />
       </div>
 
-      <span className="absolute left-4 top-4 z-20 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm pointer-events-none">
+      <span className="absolute left-4 top-4 z-20 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none shadow-sm">
         {t('beforeLabel')}
       </span>
-      <span className="absolute right-4 top-4 z-20 rounded-full bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm pointer-events-none">
+      <span className="absolute right-4 top-4 z-20 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white pointer-events-none shadow-sm">
         {t('afterLabel')}
       </span>
 

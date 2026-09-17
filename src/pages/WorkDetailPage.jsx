@@ -9,6 +9,7 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SiteLayout from '@/components/SiteLayout';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
+import SiteScrollPreview from '@/components/SiteScrollPreview';
 import FigmaEmbed from '@/components/FigmaEmbed';
 import ImageGallery from '@/components/ImageGallery';
 import { fetchProjectBySlug } from '@/lib/api';
@@ -173,6 +174,10 @@ const WorkDetailPage = () => {
                       alt={project.title}
                     />
                   );
+                }
+
+                if (project.type === 'website') {
+                  return <SiteScrollPreview project={project} alt={project.title} />;
                 }
 
                 return (

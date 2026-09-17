@@ -51,6 +51,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS figma_url TEXT;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS medium_url TEXT;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS before_image_url TEXT;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS after_image_url TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS full_page_image_url TEXT;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS gallery JSONB DEFAULT '[]'::jsonb;
 
 ALTER TABLE project_translations ADD COLUMN IF NOT EXISTS excerpt TEXT;

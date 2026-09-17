@@ -87,6 +87,7 @@ function mapProject(project, translation) {
     imageUrl: project.image_url,
     beforeImageUrl: project.before_image_url,
     afterImageUrl: project.after_image_url,
+    fullPageImageUrl: project.full_page_image_url,
     gallery: parseGallery(project.gallery),
     technologies: parseTags(project.tags).map((tag) => tag.name),
   };
@@ -200,6 +201,7 @@ function readProjectPayload(body) {
     mediumUrl: body.mediumUrl || null,
     beforeImageUrl: body.beforeImageUrl || null,
     afterImageUrl: body.afterImageUrl || null,
+    fullPageImageUrl: body.fullPageImageUrl || null,
     gallery: JSON.stringify(parseGallery(body.gallery)),
     featured: toBool(body.featured, false),
     published: toBool(body.published, true),
@@ -273,10 +275,10 @@ async function handlePost(req, res) {
       `INSERT INTO projects (
          slug, title_pt, description_pt, excerpt_pt, body_pt, category, type,
          github_url, live_url, image_key, image_url, figma_url, medium_url,
-         before_image_url, after_image_url, gallery, featured, published,
+         before_image_url, after_image_url, full_page_image_url, gallery, featured, published,
          year, client, role, sort_order, created_at, updated_at
        )
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::jsonb,$17,$18,$19,$20,$21,$22,NOW(),NOW())
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17::jsonb,$18,$19,$20,$21,$22,$23,NOW(),NOW())
        RETURNING id`,
       [
         slug,
@@ -294,6 +296,7 @@ async function handlePost(req, res) {
         data.mediumUrl,
         data.beforeImageUrl,
         data.afterImageUrl,
+        data.fullPageImageUrl,
         data.gallery,
         data.featured,
         data.published,
@@ -361,15 +364,16 @@ async function handlePut(req, res) {
            medium_url = $13,
            before_image_url = $14,
            after_image_url = $15,
-           gallery = $16::jsonb,
-           featured = $17,
-           published = $18,
-           year = $19,
-           client = $20,
-           role = $21,
-           sort_order = $22,
+           full_page_image_url = $16,
+           gallery = $17::jsonb,
+           featured = $18,
+           published = $19,
+           year = $20,
+           client = $21,
+           role = $22,
+           sort_order = $23,
            updated_at = NOW()
-       WHERE id = $23
+       WHERE id = $24
        RETURNING id`,
       [
         slug,
@@ -387,6 +391,7 @@ async function handlePut(req, res) {
         data.mediumUrl,
         data.beforeImageUrl,
         data.afterImageUrl,
+        data.fullPageImageUrl,
         data.gallery,
         data.featured,
         data.published,
